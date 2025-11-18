@@ -17,7 +17,7 @@
             <meta name="viewport" content="width=device-width,
                 initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             <style>
-                #map_cf55f1e3f32bdba38a8b9f34db591308 {
+                #map_472ec46d098c44d44ff2b348c5a89edd {
                     position: relative;
                     width: 100.0%;
                     height: 100.0%;
@@ -58,7 +58,7 @@
                 border: 2px solid #2196F3; border-radius: 5px; z-index: 9999; padding: 10px;
                 box-shadow: 0 2px 6px rgba(0,0,0,0.3); font-family: Arial, sans-serif;">
         <h4 style="margin: 0 0 5px 0; color: #2196F3;">📍 Distances from Your Location</h4>
-        <p style="margin: 0; font-size: 12px;">2 Korriku, Qendra, Prishtinë, Komuna e Prishtinës / Opština Priština, Rajoni i Prishtinës / Prištinski okrug, 10000, Kosova / Kosovo
+        <p style="margin: 0; font-size: 12px;">7 Shtatori, Besiana, Medresa, Prishtinë, Komuna e Prishtinës / Opština Priština, Rajoni i Prishtinës / Prištinski okrug, 10000, Kosova / Kosovo
 📍 Prishtinë → Kosova / Kosovo</p>
         <p style="margin: 5px 0 0 0; font-size: 11px; color: #666;">
             Blue lines show distances to major world cities
@@ -66,16 +66,16 @@
     </div>
     
     
-            <div class="folium-map" id="map_cf55f1e3f32bdba38a8b9f34db591308" ></div>
+            <div class="folium-map" id="map_472ec46d098c44d44ff2b348c5a89edd" ></div>
         
 </body>
 <script>
     
     
-            var map_cf55f1e3f32bdba38a8b9f34db591308 = L.map(
-                "map_cf55f1e3f32bdba38a8b9f34db591308",
+            var map_472ec46d098c44d44ff2b348c5a89edd = L.map(
+                "map_472ec46d098c44d44ff2b348c5a89edd",
                 {
-                    center: [42.6608774, 21.1622878],
+                    center: [42.6711682, 21.1494172],
                     crs: L.CRS.EPSG3857,
                     ...{
   "zoom": 3,
@@ -90,7 +90,7 @@
 
         
     
-            var tile_layer_2c7e3e8d90779d94fa9c388197d69eb8 = L.tileLayer(
+            var tile_layer_333691d70d0bfe9a32910183afdc5d1a = L.tileLayer(
                 "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                 {
   "minZoom": 0,
@@ -107,17 +107,17 @@
             );
         
     
-            tile_layer_2c7e3e8d90779d94fa9c388197d69eb8.addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            tile_layer_333691d70d0bfe9a32910183afdc5d1a.addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-            var marker_a889b240c3b42703d5dc85824f716c47 = L.marker(
-                [42.6608774, 21.1622878],
+            var marker_5af1fcca8c847e7c7e42cff855660a2c = L.marker(
+                [42.6711682, 21.1494172],
                 {
 }
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-            var icon_b6989adc227b825d9f907bb106282b57 = L.AwesomeMarkers.icon(
+            var icon_9b14089bf1fe978e22347e1a385f3f58 = L.AwesomeMarkers.icon(
                 {
   "markerColor": "red",
   "iconColor": "white",
@@ -128,24 +128,24 @@
             );
         
     
-        var popup_25261b2a24cb9626254e70898c3943e6 = L.popup({
+        var popup_d7ed7db69338a91ea5092a9abae8c59e = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_24184284954e4b9b29eb9bd6de2ca000 = $(`<div id="html_24184284954e4b9b29eb9bd6de2ca000" style="width: 100.0%; height: 100.0%;"><b>Your Location</b><br>2 Korriku, Qendra, Prishtinë, Komuna e Prishtinës / Opština Priština, Rajoni i Prishtinës / Prištinski okrug, 10000, Kosova / Kosovo 📍 Prishtinë → Kosova / Kosovo</div>`)[0];
-                popup_25261b2a24cb9626254e70898c3943e6.setContent(html_24184284954e4b9b29eb9bd6de2ca000);
+                var html_8a8325dfdb2350b8cdc7907dffb4a182 = $(`<div id="html_8a8325dfdb2350b8cdc7907dffb4a182" style="width: 100.0%; height: 100.0%;"><b>Your Location</b><br>7 Shtatori, Besiana, Medresa, Prishtinë, Komuna e Prishtinës / Opština Priština, Rajoni i Prishtinës / Prištinski okrug, 10000, Kosova / Kosovo 📍 Prishtinë → Kosova / Kosovo</div>`)[0];
+                popup_d7ed7db69338a91ea5092a9abae8c59e.setContent(html_8a8325dfdb2350b8cdc7907dffb4a182);
             
         
 
-        marker_a889b240c3b42703d5dc85824f716c47.bindPopup(popup_25261b2a24cb9626254e70898c3943e6)
+        marker_5af1fcca8c847e7c7e42cff855660a2c.bindPopup(popup_d7ed7db69338a91ea5092a9abae8c59e)
         ;
 
         
     
     
-            marker_a889b240c3b42703d5dc85824f716c47.bindTooltip(
+            marker_5af1fcca8c847e7c7e42cff855660a2c.bindTooltip(
                 `<div>
                      Your Location
                  </div>`,
@@ -155,58 +155,58 @@
             );
         
     
-                marker_a889b240c3b42703d5dc85824f716c47.setIcon(icon_b6989adc227b825d9f907bb106282b57);
+                marker_5af1fcca8c847e7c7e42cff855660a2c.setIcon(icon_9b14089bf1fe978e22347e1a385f3f58);
             
     
-            var poly_line_6e552ffb0b0c84fc947a65d4cb471079 = L.polyline(
-                [[42.6608774, 21.1622878], [40.7128, -74.006]],
+            var poly_line_0c049f9248bb177972474d647ac3f91c = L.polyline(
+                [[42.6711682, 21.1494172], [40.7128, -74.006]],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_7298138cad7d0f8997659b5ff92f7593 = L.popup({
+        var popup_b4375354142513ab83dd970d2086dbb8 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_37828a8cb5e30035f995552dcc2463dc = $(`<div id="html_37828a8cb5e30035f995552dcc2463dc" style="width: 100.0%; height: 100.0%;">New York, USA<br>Distance: 7443 km</div>`)[0];
-                popup_7298138cad7d0f8997659b5ff92f7593.setContent(html_37828a8cb5e30035f995552dcc2463dc);
+                var html_908146675c7fb6ac59859688d1091bf4 = $(`<div id="html_908146675c7fb6ac59859688d1091bf4" style="width: 100.0%; height: 100.0%;">New York, USA<br>Distance: 7441 km</div>`)[0];
+                popup_b4375354142513ab83dd970d2086dbb8.setContent(html_908146675c7fb6ac59859688d1091bf4);
             
         
 
-        poly_line_6e552ffb0b0c84fc947a65d4cb471079.bindPopup(popup_7298138cad7d0f8997659b5ff92f7593)
+        poly_line_0c049f9248bb177972474d647ac3f91c.bindPopup(popup_b4375354142513ab83dd970d2086dbb8)
         ;
 
         
     
     
-            var circle_marker_31e7a7c8cee8a0eac6739f3c9f366772 = L.circleMarker(
+            var circle_marker_e343b6d34a87ae031d930923f218c8e3 = L.circleMarker(
                 [40.7128, -74.006],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_b349d4a3bc6d28f802452ef0ac0240d3 = L.popup({
+        var popup_1a1d70b0a13a1be7796d3bc44f1f5db7 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_4ff3b3dcfe02f3d6334526f20dd67c42 = $(`<div id="html_4ff3b3dcfe02f3d6334526f20dd67c42" style="width: 100.0%; height: 100.0%;"><b>New York, USA</b><br>Distance: 7443 km (4625 miles)</div>`)[0];
-                popup_b349d4a3bc6d28f802452ef0ac0240d3.setContent(html_4ff3b3dcfe02f3d6334526f20dd67c42);
+                var html_3dc9b79381d774e8be6c1c9a63e43347 = $(`<div id="html_3dc9b79381d774e8be6c1c9a63e43347" style="width: 100.0%; height: 100.0%;"><b>New York, USA</b><br>Distance: 7441 km (4624 miles)</div>`)[0];
+                popup_1a1d70b0a13a1be7796d3bc44f1f5db7.setContent(html_3dc9b79381d774e8be6c1c9a63e43347);
             
         
 
-        circle_marker_31e7a7c8cee8a0eac6739f3c9f366772.bindPopup(popup_b349d4a3bc6d28f802452ef0ac0240d3)
+        circle_marker_e343b6d34a87ae031d930923f218c8e3.bindPopup(popup_1a1d70b0a13a1be7796d3bc44f1f5db7)
         ;
 
         
     
     
-            circle_marker_31e7a7c8cee8a0eac6739f3c9f366772.bindTooltip(
+            circle_marker_e343b6d34a87ae031d930923f218c8e3.bindTooltip(
                 `<div>
-                     New York, USA: 7443 km
+                     New York, USA: 7441 km
                  </div>`,
                 {
   "sticky": true,
@@ -214,55 +214,55 @@
             );
         
     
-            var poly_line_85dbad624ff36cb1db8026ae41e9cdb7 = L.polyline(
-                [[42.6608774, 21.1622878], [51.5074, -0.1278]],
+            var poly_line_cd8bb3ebe988918756b91f43c2164833 = L.polyline(
+                [[42.6711682, 21.1494172], [51.5074, -0.1278]],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_212ab8529395e4172883e205ccbf5bfc = L.popup({
+        var popup_2878984580c5853207d870b2cac6466b = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_e16a193e6979f768350ea86663addb58 = $(`<div id="html_e16a193e6979f768350ea86663addb58" style="width: 100.0%; height: 100.0%;">London, UK<br>Distance: 1878 km</div>`)[0];
-                popup_212ab8529395e4172883e205ccbf5bfc.setContent(html_e16a193e6979f768350ea86663addb58);
+                var html_2fab30a62c8070bcb0c4f0bb4d12b451 = $(`<div id="html_2fab30a62c8070bcb0c4f0bb4d12b451" style="width: 100.0%; height: 100.0%;">London, UK<br>Distance: 1876 km</div>`)[0];
+                popup_2878984580c5853207d870b2cac6466b.setContent(html_2fab30a62c8070bcb0c4f0bb4d12b451);
             
         
 
-        poly_line_85dbad624ff36cb1db8026ae41e9cdb7.bindPopup(popup_212ab8529395e4172883e205ccbf5bfc)
+        poly_line_cd8bb3ebe988918756b91f43c2164833.bindPopup(popup_2878984580c5853207d870b2cac6466b)
         ;
 
         
     
     
-            var circle_marker_84f29a9c91ea17aca8a7230c314facd0 = L.circleMarker(
+            var circle_marker_23c6c5901e2daa6cbc0d8be941de5613 = L.circleMarker(
                 [51.5074, -0.1278],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_bcea6eae645788e023701d683046138b = L.popup({
+        var popup_553a66feb5893628e42f5cf89fd7e10a = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_c2624bd831ea0d3b4f6b467ec5ef29b7 = $(`<div id="html_c2624bd831ea0d3b4f6b467ec5ef29b7" style="width: 100.0%; height: 100.0%;"><b>London, UK</b><br>Distance: 1878 km (1167 miles)</div>`)[0];
-                popup_bcea6eae645788e023701d683046138b.setContent(html_c2624bd831ea0d3b4f6b467ec5ef29b7);
+                var html_d36014cafe5f369e0b26ce6989d27501 = $(`<div id="html_d36014cafe5f369e0b26ce6989d27501" style="width: 100.0%; height: 100.0%;"><b>London, UK</b><br>Distance: 1876 km (1166 miles)</div>`)[0];
+                popup_553a66feb5893628e42f5cf89fd7e10a.setContent(html_d36014cafe5f369e0b26ce6989d27501);
             
         
 
-        circle_marker_84f29a9c91ea17aca8a7230c314facd0.bindPopup(popup_bcea6eae645788e023701d683046138b)
+        circle_marker_23c6c5901e2daa6cbc0d8be941de5613.bindPopup(popup_553a66feb5893628e42f5cf89fd7e10a)
         ;
 
         
     
     
-            circle_marker_84f29a9c91ea17aca8a7230c314facd0.bindTooltip(
+            circle_marker_23c6c5901e2daa6cbc0d8be941de5613.bindTooltip(
                 `<div>
-                     London, UK: 1878 km
+                     London, UK: 1876 km
                  </div>`,
                 {
   "sticky": true,
@@ -270,55 +270,55 @@
             );
         
     
-            var poly_line_408071ff2a037c901543544b7ee82ad5 = L.polyline(
-                [[42.6608774, 21.1622878], [48.8566, 2.3522]],
+            var poly_line_d9cba6fa46994e2b0c272669fbd883a9 = L.polyline(
+                [[42.6711682, 21.1494172], [48.8566, 2.3522]],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_90ebed99dccda4f2f4efcf38093e80b2 = L.popup({
+        var popup_38fcabcad9a7a44fd82bfce3477b3935 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_dc4c4078cf91db907fdd457f7c612e6c = $(`<div id="html_dc4c4078cf91db907fdd457f7c612e6c" style="width: 100.0%; height: 100.0%;">Paris, France<br>Distance: 1608 km</div>`)[0];
-                popup_90ebed99dccda4f2f4efcf38093e80b2.setContent(html_dc4c4078cf91db907fdd457f7c612e6c);
+                var html_e5b395bdffcb9fb2a9ccea9dbb8aa529 = $(`<div id="html_e5b395bdffcb9fb2a9ccea9dbb8aa529" style="width: 100.0%; height: 100.0%;">Paris, France<br>Distance: 1606 km</div>`)[0];
+                popup_38fcabcad9a7a44fd82bfce3477b3935.setContent(html_e5b395bdffcb9fb2a9ccea9dbb8aa529);
             
         
 
-        poly_line_408071ff2a037c901543544b7ee82ad5.bindPopup(popup_90ebed99dccda4f2f4efcf38093e80b2)
+        poly_line_d9cba6fa46994e2b0c272669fbd883a9.bindPopup(popup_38fcabcad9a7a44fd82bfce3477b3935)
         ;
 
         
     
     
-            var circle_marker_8fab7a295aba1e034fb770893354a422 = L.circleMarker(
+            var circle_marker_d88486b55abda33404ba7938a5a27e0b = L.circleMarker(
                 [48.8566, 2.3522],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_d161165fed5ef1273416d6a99e86a523 = L.popup({
+        var popup_bdaacedbc8bc0433f28429ed5b4de972 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_3671cf8251a81f65302d2148272bfcaf = $(`<div id="html_3671cf8251a81f65302d2148272bfcaf" style="width: 100.0%; height: 100.0%;"><b>Paris, France</b><br>Distance: 1608 km (999 miles)</div>`)[0];
-                popup_d161165fed5ef1273416d6a99e86a523.setContent(html_3671cf8251a81f65302d2148272bfcaf);
+                var html_a0a0ca888800fe312320ce7085ddb8b9 = $(`<div id="html_a0a0ca888800fe312320ce7085ddb8b9" style="width: 100.0%; height: 100.0%;"><b>Paris, France</b><br>Distance: 1606 km (998 miles)</div>`)[0];
+                popup_bdaacedbc8bc0433f28429ed5b4de972.setContent(html_a0a0ca888800fe312320ce7085ddb8b9);
             
         
 
-        circle_marker_8fab7a295aba1e034fb770893354a422.bindPopup(popup_d161165fed5ef1273416d6a99e86a523)
+        circle_marker_d88486b55abda33404ba7938a5a27e0b.bindPopup(popup_bdaacedbc8bc0433f28429ed5b4de972)
         ;
 
         
     
     
-            circle_marker_8fab7a295aba1e034fb770893354a422.bindTooltip(
+            circle_marker_d88486b55abda33404ba7938a5a27e0b.bindTooltip(
                 `<div>
-                     Paris, France: 1608 km
+                     Paris, France: 1606 km
                  </div>`,
                 {
   "sticky": true,
@@ -326,53 +326,53 @@
             );
         
     
-            var poly_line_1d3e8af0e301a06775ecf3bd21b8c0b1 = L.polyline(
-                [[42.6608774, 21.1622878], [35.6762, 139.6503]],
+            var poly_line_6c0d4d50cccf347c95818172924fd670 = L.polyline(
+                [[42.6711682, 21.1494172], [35.6762, 139.6503]],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_3d63b156b3132ad3536ed2f417ae0ddb = L.popup({
+        var popup_63dc2096477e21f624dd9bfdfdd46def = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_a9efc9dfa7a7ccdd53513e5121d61e46 = $(`<div id="html_a9efc9dfa7a7ccdd53513e5121d61e46" style="width: 100.0%; height: 100.0%;">Tokyo, Japan<br>Distance: 9303 km</div>`)[0];
-                popup_3d63b156b3132ad3536ed2f417ae0ddb.setContent(html_a9efc9dfa7a7ccdd53513e5121d61e46);
+                var html_a6e2e9166879967a72c3fb30806ba886 = $(`<div id="html_a6e2e9166879967a72c3fb30806ba886" style="width: 100.0%; height: 100.0%;">Tokyo, Japan<br>Distance: 9303 km</div>`)[0];
+                popup_63dc2096477e21f624dd9bfdfdd46def.setContent(html_a6e2e9166879967a72c3fb30806ba886);
             
         
 
-        poly_line_1d3e8af0e301a06775ecf3bd21b8c0b1.bindPopup(popup_3d63b156b3132ad3536ed2f417ae0ddb)
+        poly_line_6c0d4d50cccf347c95818172924fd670.bindPopup(popup_63dc2096477e21f624dd9bfdfdd46def)
         ;
 
         
     
     
-            var circle_marker_dd17555ac9aeb27aea215b8bbbfe755d = L.circleMarker(
+            var circle_marker_23494fcfd8bffab0c39ee473ac86c1a4 = L.circleMarker(
                 [35.6762, 139.6503],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_3337cf9100bd3ce201b20ad838e7ac07 = L.popup({
+        var popup_bedb7f22be77522cb2d2a72cfb9d664c = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_8e8846b8817bb9fbea2a2ac68bdea334 = $(`<div id="html_8e8846b8817bb9fbea2a2ac68bdea334" style="width: 100.0%; height: 100.0%;"><b>Tokyo, Japan</b><br>Distance: 9303 km (5781 miles)</div>`)[0];
-                popup_3337cf9100bd3ce201b20ad838e7ac07.setContent(html_8e8846b8817bb9fbea2a2ac68bdea334);
+                var html_fc7dc8dfe4a3b2c17f78d4f69b47dba3 = $(`<div id="html_fc7dc8dfe4a3b2c17f78d4f69b47dba3" style="width: 100.0%; height: 100.0%;"><b>Tokyo, Japan</b><br>Distance: 9303 km (5781 miles)</div>`)[0];
+                popup_bedb7f22be77522cb2d2a72cfb9d664c.setContent(html_fc7dc8dfe4a3b2c17f78d4f69b47dba3);
             
         
 
-        circle_marker_dd17555ac9aeb27aea215b8bbbfe755d.bindPopup(popup_3337cf9100bd3ce201b20ad838e7ac07)
+        circle_marker_23494fcfd8bffab0c39ee473ac86c1a4.bindPopup(popup_bedb7f22be77522cb2d2a72cfb9d664c)
         ;
 
         
     
     
-            circle_marker_dd17555ac9aeb27aea215b8bbbfe755d.bindTooltip(
+            circle_marker_23494fcfd8bffab0c39ee473ac86c1a4.bindTooltip(
                 `<div>
                      Tokyo, Japan: 9303 km
                  </div>`,
@@ -382,55 +382,55 @@
             );
         
     
-            var poly_line_3696cfa8c264d0f5c003ce36e527d751 = L.polyline(
-                [[42.6608774, 21.1622878], [39.9042, 116.4074]],
+            var poly_line_df57a72ad01ec69e498c19ea8c35ddc4 = L.polyline(
+                [[42.6711682, 21.1494172], [39.9042, 116.4074]],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_7fe2d2ed80b712eaca31a0065614862b = L.popup({
+        var popup_a473131a3f6202957484000de4356f5e = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_ed65f2a774a254de7c316a1714462c08 = $(`<div id="html_ed65f2a774a254de7c316a1714462c08" style="width: 100.0%; height: 100.0%;">Beijing, China<br>Distance: 7502 km</div>`)[0];
-                popup_7fe2d2ed80b712eaca31a0065614862b.setContent(html_ed65f2a774a254de7c316a1714462c08);
+                var html_e97604367efb69d0b94c16006bd1ba9a = $(`<div id="html_e97604367efb69d0b94c16006bd1ba9a" style="width: 100.0%; height: 100.0%;">Beijing, China<br>Distance: 7503 km</div>`)[0];
+                popup_a473131a3f6202957484000de4356f5e.setContent(html_e97604367efb69d0b94c16006bd1ba9a);
             
         
 
-        poly_line_3696cfa8c264d0f5c003ce36e527d751.bindPopup(popup_7fe2d2ed80b712eaca31a0065614862b)
+        poly_line_df57a72ad01ec69e498c19ea8c35ddc4.bindPopup(popup_a473131a3f6202957484000de4356f5e)
         ;
 
         
     
     
-            var circle_marker_7966c438098345240c811e66ab098408 = L.circleMarker(
+            var circle_marker_fae7e6b4f0317dcfaa65f9d840d09d59 = L.circleMarker(
                 [39.9042, 116.4074],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_d1d2068df2cf152d376c3ce9682c566c = L.popup({
+        var popup_1e7dade7da6b756e1e49dff05789d8bb = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_3b44eaedc661169c32115163671048c1 = $(`<div id="html_3b44eaedc661169c32115163671048c1" style="width: 100.0%; height: 100.0%;"><b>Beijing, China</b><br>Distance: 7502 km (4662 miles)</div>`)[0];
-                popup_d1d2068df2cf152d376c3ce9682c566c.setContent(html_3b44eaedc661169c32115163671048c1);
+                var html_5650ab70d8e182b0064370c97560343a = $(`<div id="html_5650ab70d8e182b0064370c97560343a" style="width: 100.0%; height: 100.0%;"><b>Beijing, China</b><br>Distance: 7503 km (4662 miles)</div>`)[0];
+                popup_1e7dade7da6b756e1e49dff05789d8bb.setContent(html_5650ab70d8e182b0064370c97560343a);
             
         
 
-        circle_marker_7966c438098345240c811e66ab098408.bindPopup(popup_d1d2068df2cf152d376c3ce9682c566c)
+        circle_marker_fae7e6b4f0317dcfaa65f9d840d09d59.bindPopup(popup_1e7dade7da6b756e1e49dff05789d8bb)
         ;
 
         
     
     
-            circle_marker_7966c438098345240c811e66ab098408.bindTooltip(
+            circle_marker_fae7e6b4f0317dcfaa65f9d840d09d59.bindTooltip(
                 `<div>
-                     Beijing, China: 7502 km
+                     Beijing, China: 7503 km
                  </div>`,
                 {
   "sticky": true,
@@ -438,53 +438,53 @@
             );
         
     
-            var poly_line_b913d916ab0e959e164e23321a496630 = L.polyline(
-                [[42.6608774, 21.1622878], [55.7558, 37.6173]],
+            var poly_line_b5aea24f65d12ced6dfa4ee697b720aa = L.polyline(
+                [[42.6711682, 21.1494172], [55.7558, 37.6173]],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_bb1958dcf5e987a58d667f68b69dc149 = L.popup({
+        var popup_77af4c5a84cc8040c05528df55d95ef4 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_cb42729c38ac8c13b789cf8a0c5f1124 = $(`<div id="html_cb42729c38ac8c13b789cf8a0c5f1124" style="width: 100.0%; height: 100.0%;">Moscow, Russia<br>Distance: 1874 km</div>`)[0];
-                popup_bb1958dcf5e987a58d667f68b69dc149.setContent(html_cb42729c38ac8c13b789cf8a0c5f1124);
+                var html_cbcd1b952e1da0ac64c7d82731be4871 = $(`<div id="html_cbcd1b952e1da0ac64c7d82731be4871" style="width: 100.0%; height: 100.0%;">Moscow, Russia<br>Distance: 1874 km</div>`)[0];
+                popup_77af4c5a84cc8040c05528df55d95ef4.setContent(html_cbcd1b952e1da0ac64c7d82731be4871);
             
         
 
-        poly_line_b913d916ab0e959e164e23321a496630.bindPopup(popup_bb1958dcf5e987a58d667f68b69dc149)
+        poly_line_b5aea24f65d12ced6dfa4ee697b720aa.bindPopup(popup_77af4c5a84cc8040c05528df55d95ef4)
         ;
 
         
     
     
-            var circle_marker_bc2c552b49e84d3f06885668b5134642 = L.circleMarker(
+            var circle_marker_76de23f1714c30e1e22a2aa6738b1cb3 = L.circleMarker(
                 [55.7558, 37.6173],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_c819a693e2123a340e55e0b6ec0dc5ee = L.popup({
+        var popup_c35995704ad90f42fd7a537674b3501c = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_18c10c8fcb22b7df123fd714e864b18b = $(`<div id="html_18c10c8fcb22b7df123fd714e864b18b" style="width: 100.0%; height: 100.0%;"><b>Moscow, Russia</b><br>Distance: 1874 km (1164 miles)</div>`)[0];
-                popup_c819a693e2123a340e55e0b6ec0dc5ee.setContent(html_18c10c8fcb22b7df123fd714e864b18b);
+                var html_3f0d942bae205c53143beab6b094f93f = $(`<div id="html_3f0d942bae205c53143beab6b094f93f" style="width: 100.0%; height: 100.0%;"><b>Moscow, Russia</b><br>Distance: 1874 km (1164 miles)</div>`)[0];
+                popup_c35995704ad90f42fd7a537674b3501c.setContent(html_3f0d942bae205c53143beab6b094f93f);
             
         
 
-        circle_marker_bc2c552b49e84d3f06885668b5134642.bindPopup(popup_c819a693e2123a340e55e0b6ec0dc5ee)
+        circle_marker_76de23f1714c30e1e22a2aa6738b1cb3.bindPopup(popup_c35995704ad90f42fd7a537674b3501c)
         ;
 
         
     
     
-            circle_marker_bc2c552b49e84d3f06885668b5134642.bindTooltip(
+            circle_marker_76de23f1714c30e1e22a2aa6738b1cb3.bindTooltip(
                 `<div>
                      Moscow, Russia: 1874 km
                  </div>`,
@@ -494,55 +494,55 @@
             );
         
     
-            var poly_line_d553dfaa2f314d62f3c5780a355a314a = L.polyline(
-                [[42.6608774, 21.1622878], [25.2048, 55.2708]],
+            var poly_line_e5fafa3716aea3d28ee3ce0507fbfe75 = L.polyline(
+                [[42.6711682, 21.1494172], [25.2048, 55.2708]],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_7e820ef54eaa503052509c436d3f5b04 = L.popup({
+        var popup_dcc645f372241dec7ad863ad79c13bef = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_f3b7bde75342ac75e79ed9b6fa6adcf8 = $(`<div id="html_f3b7bde75342ac75e79ed9b6fa6adcf8" style="width: 100.0%; height: 100.0%;">Dubai, UAE<br>Distance: 3660 km</div>`)[0];
-                popup_7e820ef54eaa503052509c436d3f5b04.setContent(html_f3b7bde75342ac75e79ed9b6fa6adcf8);
+                var html_e3772965834d0ebb0d569b6a2204b24c = $(`<div id="html_e3772965834d0ebb0d569b6a2204b24c" style="width: 100.0%; height: 100.0%;">Dubai, UAE<br>Distance: 3661 km</div>`)[0];
+                popup_dcc645f372241dec7ad863ad79c13bef.setContent(html_e3772965834d0ebb0d569b6a2204b24c);
             
         
 
-        poly_line_d553dfaa2f314d62f3c5780a355a314a.bindPopup(popup_7e820ef54eaa503052509c436d3f5b04)
+        poly_line_e5fafa3716aea3d28ee3ce0507fbfe75.bindPopup(popup_dcc645f372241dec7ad863ad79c13bef)
         ;
 
         
     
     
-            var circle_marker_8cbef59c36d8f3e6acebbf66ad9780aa = L.circleMarker(
+            var circle_marker_5c3ec6078733b370c52e0bdf383e39df = L.circleMarker(
                 [25.2048, 55.2708],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_db4ae75aecf47d67419f3e9029abb96d = L.popup({
+        var popup_a4ed7eb42d39ad3ddb7fe47873001c78 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_0d86050fb4feb25399a9ae022998c008 = $(`<div id="html_0d86050fb4feb25399a9ae022998c008" style="width: 100.0%; height: 100.0%;"><b>Dubai, UAE</b><br>Distance: 3660 km (2274 miles)</div>`)[0];
-                popup_db4ae75aecf47d67419f3e9029abb96d.setContent(html_0d86050fb4feb25399a9ae022998c008);
+                var html_bacd0d0c2f97ad72219007822a7b794d = $(`<div id="html_bacd0d0c2f97ad72219007822a7b794d" style="width: 100.0%; height: 100.0%;"><b>Dubai, UAE</b><br>Distance: 3661 km (2275 miles)</div>`)[0];
+                popup_a4ed7eb42d39ad3ddb7fe47873001c78.setContent(html_bacd0d0c2f97ad72219007822a7b794d);
             
         
 
-        circle_marker_8cbef59c36d8f3e6acebbf66ad9780aa.bindPopup(popup_db4ae75aecf47d67419f3e9029abb96d)
+        circle_marker_5c3ec6078733b370c52e0bdf383e39df.bindPopup(popup_a4ed7eb42d39ad3ddb7fe47873001c78)
         ;
 
         
     
     
-            circle_marker_8cbef59c36d8f3e6acebbf66ad9780aa.bindTooltip(
+            circle_marker_5c3ec6078733b370c52e0bdf383e39df.bindTooltip(
                 `<div>
-                     Dubai, UAE: 3660 km
+                     Dubai, UAE: 3661 km
                  </div>`,
                 {
   "sticky": true,
@@ -550,55 +550,55 @@
             );
         
     
-            var poly_line_486fba0d25df79ade6b725e5e401b78f = L.polyline(
-                [[42.6608774, 21.1622878], [-33.8688, 151.2093]],
+            var poly_line_6c0c41f1eb7bcc4afd7bae1619f76933 = L.polyline(
+                [[42.6711682, 21.1494172], [-33.8688, 151.2093]],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_ebf52451f30588f8d77031b2e3ed649f = L.popup({
+        var popup_bfd55987c75a7b77408a42008f487963 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_f0c31b1b58dca967178b6a9da277f8ef = $(`<div id="html_f0c31b1b58dca967178b6a9da277f8ef" style="width: 100.0%; height: 100.0%;">Sydney, Australia<br>Distance: 15612 km</div>`)[0];
-                popup_ebf52451f30588f8d77031b2e3ed649f.setContent(html_f0c31b1b58dca967178b6a9da277f8ef);
+                var html_38416eec6c4bd803f19fa05153a7917d = $(`<div id="html_38416eec6c4bd803f19fa05153a7917d" style="width: 100.0%; height: 100.0%;">Sydney, Australia<br>Distance: 15613 km</div>`)[0];
+                popup_bfd55987c75a7b77408a42008f487963.setContent(html_38416eec6c4bd803f19fa05153a7917d);
             
         
 
-        poly_line_486fba0d25df79ade6b725e5e401b78f.bindPopup(popup_ebf52451f30588f8d77031b2e3ed649f)
+        poly_line_6c0c41f1eb7bcc4afd7bae1619f76933.bindPopup(popup_bfd55987c75a7b77408a42008f487963)
         ;
 
         
     
     
-            var circle_marker_5625d3f12604c99e7588a2c9e3e244ee = L.circleMarker(
+            var circle_marker_b17f5706fb2fff31a2b704ef87ecae49 = L.circleMarker(
                 [-33.8688, 151.2093],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_5d98cdaa176e3a70e104270503befeb4 = L.popup({
+        var popup_de610d92e8ede16bc0853cf39926dd58 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_8deb6075fb13863227641a823214f5c7 = $(`<div id="html_8deb6075fb13863227641a823214f5c7" style="width: 100.0%; height: 100.0%;"><b>Sydney, Australia</b><br>Distance: 15612 km (9701 miles)</div>`)[0];
-                popup_5d98cdaa176e3a70e104270503befeb4.setContent(html_8deb6075fb13863227641a823214f5c7);
+                var html_d81ed23646b0b18ce38ebdeb61fedfad = $(`<div id="html_d81ed23646b0b18ce38ebdeb61fedfad" style="width: 100.0%; height: 100.0%;"><b>Sydney, Australia</b><br>Distance: 15613 km (9701 miles)</div>`)[0];
+                popup_de610d92e8ede16bc0853cf39926dd58.setContent(html_d81ed23646b0b18ce38ebdeb61fedfad);
             
         
 
-        circle_marker_5625d3f12604c99e7588a2c9e3e244ee.bindPopup(popup_5d98cdaa176e3a70e104270503befeb4)
+        circle_marker_b17f5706fb2fff31a2b704ef87ecae49.bindPopup(popup_de610d92e8ede16bc0853cf39926dd58)
         ;
 
         
     
     
-            circle_marker_5625d3f12604c99e7588a2c9e3e244ee.bindTooltip(
+            circle_marker_b17f5706fb2fff31a2b704ef87ecae49.bindTooltip(
                 `<div>
-                     Sydney, Australia: 15612 km
+                     Sydney, Australia: 15613 km
                  </div>`,
                 {
   "sticky": true,
@@ -606,53 +606,53 @@
             );
         
     
-            var poly_line_293315626326262ea38cd1ee7e981019 = L.polyline(
-                [[42.6608774, 21.1622878], [-23.5505, -46.6333]],
+            var poly_line_854121d30ba451796012a8299081386c = L.polyline(
+                [[42.6711682, 21.1494172], [-23.5505, -46.6333]],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_d8bb7456f14ae6aff57a2b94925a4ba3 = L.popup({
+        var popup_2398fdf725ad7d24aedda51269370035 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_35a074b6cfa956ed027f56cc0cc9ea63 = $(`<div id="html_35a074b6cfa956ed027f56cc0cc9ea63" style="width: 100.0%; height: 100.0%;">São Paulo, Brazil<br>Distance: 10109 km</div>`)[0];
-                popup_d8bb7456f14ae6aff57a2b94925a4ba3.setContent(html_35a074b6cfa956ed027f56cc0cc9ea63);
+                var html_66e4fce153e846df0ee561a0ac86c330 = $(`<div id="html_66e4fce153e846df0ee561a0ac86c330" style="width: 100.0%; height: 100.0%;">São Paulo, Brazil<br>Distance: 10109 km</div>`)[0];
+                popup_2398fdf725ad7d24aedda51269370035.setContent(html_66e4fce153e846df0ee561a0ac86c330);
             
         
 
-        poly_line_293315626326262ea38cd1ee7e981019.bindPopup(popup_d8bb7456f14ae6aff57a2b94925a4ba3)
+        poly_line_854121d30ba451796012a8299081386c.bindPopup(popup_2398fdf725ad7d24aedda51269370035)
         ;
 
         
     
     
-            var circle_marker_43afdf9e163f21288e6a38b31eded614 = L.circleMarker(
+            var circle_marker_17a2e01eba2d0d0143aebd7a93c798c6 = L.circleMarker(
                 [-23.5505, -46.6333],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_0983935a7e0a7b44748f507c861ebf00 = L.popup({
+        var popup_2e2d6c575fc9cb4adab5e75938055437 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_654436e997a158f10a9dc6403acf92f2 = $(`<div id="html_654436e997a158f10a9dc6403acf92f2" style="width: 100.0%; height: 100.0%;"><b>São Paulo, Brazil</b><br>Distance: 10109 km (6282 miles)</div>`)[0];
-                popup_0983935a7e0a7b44748f507c861ebf00.setContent(html_654436e997a158f10a9dc6403acf92f2);
+                var html_19cb322074270c29380076bc67b3392d = $(`<div id="html_19cb322074270c29380076bc67b3392d" style="width: 100.0%; height: 100.0%;"><b>São Paulo, Brazil</b><br>Distance: 10109 km (6282 miles)</div>`)[0];
+                popup_2e2d6c575fc9cb4adab5e75938055437.setContent(html_19cb322074270c29380076bc67b3392d);
             
         
 
-        circle_marker_43afdf9e163f21288e6a38b31eded614.bindPopup(popup_0983935a7e0a7b44748f507c861ebf00)
+        circle_marker_17a2e01eba2d0d0143aebd7a93c798c6.bindPopup(popup_2e2d6c575fc9cb4adab5e75938055437)
         ;
 
         
     
     
-            circle_marker_43afdf9e163f21288e6a38b31eded614.bindTooltip(
+            circle_marker_17a2e01eba2d0d0143aebd7a93c798c6.bindTooltip(
                 `<div>
                      São Paulo, Brazil: 10109 km
                  </div>`,
@@ -662,55 +662,55 @@
             );
         
     
-            var poly_line_83afe5b6bb7725590c25d0430a4158e8 = L.polyline(
-                [[42.6608774, 21.1622878], [30.0444, 31.2357]],
+            var poly_line_742e0d53c71c952fb2a6abc2b12c1eaa = L.polyline(
+                [[42.6711682, 21.1494172], [30.0444, 31.2357]],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_30868dfe746843dc473ecb2dd9b13bf9 = L.popup({
+        var popup_a2bd37114959e2e86a90462dc9031097 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_855e47803eb066340d603d1b7c030901 = $(`<div id="html_855e47803eb066340d603d1b7c030901" style="width: 100.0%; height: 100.0%;">Cairo, Egypt<br>Distance: 1665 km</div>`)[0];
-                popup_30868dfe746843dc473ecb2dd9b13bf9.setContent(html_855e47803eb066340d603d1b7c030901);
+                var html_70ff4fdfdd1ae0c2fd1863bac01b4a1a = $(`<div id="html_70ff4fdfdd1ae0c2fd1863bac01b4a1a" style="width: 100.0%; height: 100.0%;">Cairo, Egypt<br>Distance: 1667 km</div>`)[0];
+                popup_a2bd37114959e2e86a90462dc9031097.setContent(html_70ff4fdfdd1ae0c2fd1863bac01b4a1a);
             
         
 
-        poly_line_83afe5b6bb7725590c25d0430a4158e8.bindPopup(popup_30868dfe746843dc473ecb2dd9b13bf9)
+        poly_line_742e0d53c71c952fb2a6abc2b12c1eaa.bindPopup(popup_a2bd37114959e2e86a90462dc9031097)
         ;
 
         
     
     
-            var circle_marker_8dfa63242ba6aa77100010ea0dd8c931 = L.circleMarker(
+            var circle_marker_e67b9c9fa590e1bde2edf8b698c0a13f = L.circleMarker(
                 [30.0444, 31.2357],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_ef35d6dcae59c99528a2107aa5eca11f = L.popup({
+        var popup_0502f0743b6cc8ad24459b3c154214a0 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_acf1acb0272fd0b42e2c8f6b26802de3 = $(`<div id="html_acf1acb0272fd0b42e2c8f6b26802de3" style="width: 100.0%; height: 100.0%;"><b>Cairo, Egypt</b><br>Distance: 1665 km (1035 miles)</div>`)[0];
-                popup_ef35d6dcae59c99528a2107aa5eca11f.setContent(html_acf1acb0272fd0b42e2c8f6b26802de3);
+                var html_a8dc7ea7ba72a4a17cb03e6c8aca658d = $(`<div id="html_a8dc7ea7ba72a4a17cb03e6c8aca658d" style="width: 100.0%; height: 100.0%;"><b>Cairo, Egypt</b><br>Distance: 1667 km (1036 miles)</div>`)[0];
+                popup_0502f0743b6cc8ad24459b3c154214a0.setContent(html_a8dc7ea7ba72a4a17cb03e6c8aca658d);
             
         
 
-        circle_marker_8dfa63242ba6aa77100010ea0dd8c931.bindPopup(popup_ef35d6dcae59c99528a2107aa5eca11f)
+        circle_marker_e67b9c9fa590e1bde2edf8b698c0a13f.bindPopup(popup_0502f0743b6cc8ad24459b3c154214a0)
         ;
 
         
     
     
-            circle_marker_8dfa63242ba6aa77100010ea0dd8c931.bindTooltip(
+            circle_marker_e67b9c9fa590e1bde2edf8b698c0a13f.bindTooltip(
                 `<div>
-                     Cairo, Egypt: 1665 km
+                     Cairo, Egypt: 1667 km
                  </div>`,
                 {
   "sticky": true,
@@ -718,55 +718,55 @@
             );
         
     
-            var poly_line_b1702ec6f708046babab89313c1f8515 = L.polyline(
-                [[42.6608774, 21.1622878], [19.076, 72.8777]],
+            var poly_line_3e45f56c32626e60e0c033982d6c53e8 = L.polyline(
+                [[42.6711682, 21.1494172], [19.076, 72.8777]],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_ca46c6126449b9b50acf9fb1d48b05ce = L.popup({
+        var popup_ef125482017f210dab857bcc043d7518 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_9a124ea5a9e42c8e549d1ef1b510741e = $(`<div id="html_9a124ea5a9e42c8e549d1ef1b510741e" style="width: 100.0%; height: 100.0%;">Mumbai, India<br>Distance: 5482 km</div>`)[0];
-                popup_ca46c6126449b9b50acf9fb1d48b05ce.setContent(html_9a124ea5a9e42c8e549d1ef1b510741e);
+                var html_0b6e3f9846cb88fd0863a1768216ee02 = $(`<div id="html_0b6e3f9846cb88fd0863a1768216ee02" style="width: 100.0%; height: 100.0%;">Mumbai, India<br>Distance: 5483 km</div>`)[0];
+                popup_ef125482017f210dab857bcc043d7518.setContent(html_0b6e3f9846cb88fd0863a1768216ee02);
             
         
 
-        poly_line_b1702ec6f708046babab89313c1f8515.bindPopup(popup_ca46c6126449b9b50acf9fb1d48b05ce)
+        poly_line_3e45f56c32626e60e0c033982d6c53e8.bindPopup(popup_ef125482017f210dab857bcc043d7518)
         ;
 
         
     
     
-            var circle_marker_91aa2a788392294708b61e55eb3b1818 = L.circleMarker(
+            var circle_marker_397e7c67122533579c46ac29e015ecfd = L.circleMarker(
                 [19.076, 72.8777],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_687c1ab2530d906801a133dbcdc2cb77 = L.popup({
+        var popup_11ceb839f9b6bb36744e97e0abd18cb2 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_924c82fb9c24d79d8dd2b2bdd8b7b703 = $(`<div id="html_924c82fb9c24d79d8dd2b2bdd8b7b703" style="width: 100.0%; height: 100.0%;"><b>Mumbai, India</b><br>Distance: 5482 km (3406 miles)</div>`)[0];
-                popup_687c1ab2530d906801a133dbcdc2cb77.setContent(html_924c82fb9c24d79d8dd2b2bdd8b7b703);
+                var html_ac3bee620947c27cc5c3a0551f56d495 = $(`<div id="html_ac3bee620947c27cc5c3a0551f56d495" style="width: 100.0%; height: 100.0%;"><b>Mumbai, India</b><br>Distance: 5483 km (3407 miles)</div>`)[0];
+                popup_11ceb839f9b6bb36744e97e0abd18cb2.setContent(html_ac3bee620947c27cc5c3a0551f56d495);
             
         
 
-        circle_marker_91aa2a788392294708b61e55eb3b1818.bindPopup(popup_687c1ab2530d906801a133dbcdc2cb77)
+        circle_marker_397e7c67122533579c46ac29e015ecfd.bindPopup(popup_11ceb839f9b6bb36744e97e0abd18cb2)
         ;
 
         
     
     
-            circle_marker_91aa2a788392294708b61e55eb3b1818.bindTooltip(
+            circle_marker_397e7c67122533579c46ac29e015ecfd.bindTooltip(
                 `<div>
-                     Mumbai, India: 5482 km
+                     Mumbai, India: 5483 km
                  </div>`,
                 {
   "sticky": true,
@@ -774,55 +774,55 @@
             );
         
     
-            var poly_line_31d4dc11163bf6fbe6eea1c7f0c129e6 = L.polyline(
-                [[42.6608774, 21.1622878], [52.52, 13.405]],
+            var poly_line_198cf09d9f5a1c29e86a0f18b40a1cdd = L.polyline(
+                [[42.6711682, 21.1494172], [52.52, 13.405]],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_570917a3fa5736340618e5dc677ccfca = L.popup({
+        var popup_1084a2b8bbf5c2416abebd8f2b6f0a4a = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_bfc65057157e723d6a7c56d5579817ca = $(`<div id="html_bfc65057157e723d6a7c56d5579817ca" style="width: 100.0%; height: 100.0%;">Berlin, Germany<br>Distance: 1239 km</div>`)[0];
-                popup_570917a3fa5736340618e5dc677ccfca.setContent(html_bfc65057157e723d6a7c56d5579817ca);
+                var html_dc13945ffee0f4c21a56b0f60737a806 = $(`<div id="html_dc13945ffee0f4c21a56b0f60737a806" style="width: 100.0%; height: 100.0%;">Berlin, Germany<br>Distance: 1238 km</div>`)[0];
+                popup_1084a2b8bbf5c2416abebd8f2b6f0a4a.setContent(html_dc13945ffee0f4c21a56b0f60737a806);
             
         
 
-        poly_line_31d4dc11163bf6fbe6eea1c7f0c129e6.bindPopup(popup_570917a3fa5736340618e5dc677ccfca)
+        poly_line_198cf09d9f5a1c29e86a0f18b40a1cdd.bindPopup(popup_1084a2b8bbf5c2416abebd8f2b6f0a4a)
         ;
 
         
     
     
-            var circle_marker_1a0764726e626b87fa0e68009bf2c56a = L.circleMarker(
+            var circle_marker_8f44ad3e702bbb86cce33a277958390b = L.circleMarker(
                 [52.52, 13.405],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_ff051bad7b5d2a48ba24ffce28cd2065 = L.popup({
+        var popup_f3ef794ce6fbe58355ca7e6836802433 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_461b585a0ab690f372f11f6917414078 = $(`<div id="html_461b585a0ab690f372f11f6917414078" style="width: 100.0%; height: 100.0%;"><b>Berlin, Germany</b><br>Distance: 1239 km (770 miles)</div>`)[0];
-                popup_ff051bad7b5d2a48ba24ffce28cd2065.setContent(html_461b585a0ab690f372f11f6917414078);
+                var html_b9f644f50212ddb95e86ae254475334e = $(`<div id="html_b9f644f50212ddb95e86ae254475334e" style="width: 100.0%; height: 100.0%;"><b>Berlin, Germany</b><br>Distance: 1238 km (769 miles)</div>`)[0];
+                popup_f3ef794ce6fbe58355ca7e6836802433.setContent(html_b9f644f50212ddb95e86ae254475334e);
             
         
 
-        circle_marker_1a0764726e626b87fa0e68009bf2c56a.bindPopup(popup_ff051bad7b5d2a48ba24ffce28cd2065)
+        circle_marker_8f44ad3e702bbb86cce33a277958390b.bindPopup(popup_f3ef794ce6fbe58355ca7e6836802433)
         ;
 
         
     
     
-            circle_marker_1a0764726e626b87fa0e68009bf2c56a.bindTooltip(
+            circle_marker_8f44ad3e702bbb86cce33a277958390b.bindTooltip(
                 `<div>
-                     Berlin, Germany: 1239 km
+                     Berlin, Germany: 1238 km
                  </div>`,
                 {
   "sticky": true,
@@ -830,55 +830,55 @@
             );
         
     
-            var poly_line_580780815c65105bf98f3b20c074beef = L.polyline(
-                [[42.6608774, 21.1622878], [41.9028, 12.4964]],
+            var poly_line_831f7aed96cb95c40884a2aa90c03a17 = L.polyline(
+                [[42.6711682, 21.1494172], [41.9028, 12.4964]],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_b42d94960ca927ab829d84555da59865 = L.popup({
+        var popup_ab685065488e34ed092e3117208ab4aa = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_c5379513014e2b83b5c8776852431355 = $(`<div id="html_c5379513014e2b83b5c8776852431355" style="width: 100.0%; height: 100.0%;">Rome, Italy<br>Distance: 718 km</div>`)[0];
-                popup_b42d94960ca927ab829d84555da59865.setContent(html_c5379513014e2b83b5c8776852431355);
+                var html_e1a59b3ca6b7289cb2548ee6e253397e = $(`<div id="html_e1a59b3ca6b7289cb2548ee6e253397e" style="width: 100.0%; height: 100.0%;">Rome, Italy<br>Distance: 717 km</div>`)[0];
+                popup_ab685065488e34ed092e3117208ab4aa.setContent(html_e1a59b3ca6b7289cb2548ee6e253397e);
             
         
 
-        poly_line_580780815c65105bf98f3b20c074beef.bindPopup(popup_b42d94960ca927ab829d84555da59865)
+        poly_line_831f7aed96cb95c40884a2aa90c03a17.bindPopup(popup_ab685065488e34ed092e3117208ab4aa)
         ;
 
         
     
     
-            var circle_marker_6d5df7027368628a205c35dc4fd3618f = L.circleMarker(
+            var circle_marker_b0c7200349daae009bed0102ccb24dfd = L.circleMarker(
                 [41.9028, 12.4964],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_616bc99bf3b8b6d1b5de9273a54e4935 = L.popup({
+        var popup_6963b00ae0a0d491015ce3f402863107 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_5cbd19f1b647b49e4dcc39e87b76a519 = $(`<div id="html_5cbd19f1b647b49e4dcc39e87b76a519" style="width: 100.0%; height: 100.0%;"><b>Rome, Italy</b><br>Distance: 718 km (446 miles)</div>`)[0];
-                popup_616bc99bf3b8b6d1b5de9273a54e4935.setContent(html_5cbd19f1b647b49e4dcc39e87b76a519);
+                var html_b1eaa19e2af4420521bb98110ed8c52d = $(`<div id="html_b1eaa19e2af4420521bb98110ed8c52d" style="width: 100.0%; height: 100.0%;"><b>Rome, Italy</b><br>Distance: 717 km (445 miles)</div>`)[0];
+                popup_6963b00ae0a0d491015ce3f402863107.setContent(html_b1eaa19e2af4420521bb98110ed8c52d);
             
         
 
-        circle_marker_6d5df7027368628a205c35dc4fd3618f.bindPopup(popup_616bc99bf3b8b6d1b5de9273a54e4935)
+        circle_marker_b0c7200349daae009bed0102ccb24dfd.bindPopup(popup_6963b00ae0a0d491015ce3f402863107)
         ;
 
         
     
     
-            circle_marker_6d5df7027368628a205c35dc4fd3618f.bindTooltip(
+            circle_marker_b0c7200349daae009bed0102ccb24dfd.bindTooltip(
                 `<div>
-                     Rome, Italy: 718 km
+                     Rome, Italy: 717 km
                  </div>`,
                 {
   "sticky": true,
@@ -886,55 +886,55 @@
             );
         
     
-            var poly_line_c346e66edbb83eefe025d07c8bcea8ef = L.polyline(
-                [[42.6608774, 21.1622878], [40.4168, -3.7038]],
+            var poly_line_a789b25387d29069b9327ace4b2a9ecb = L.polyline(
+                [[42.6711682, 21.1494172], [40.4168, -3.7038]],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_8e25784c9844350f5263aa16889457b2 = L.popup({
+        var popup_ad385a0d9f42d5d4520aee640495387d = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_a52eef35bff8d7b20a5748cf79fb1c92 = $(`<div id="html_a52eef35bff8d7b20a5748cf79fb1c92" style="width: 100.0%; height: 100.0%;">Madrid, Spain<br>Distance: 2077 km</div>`)[0];
-                popup_8e25784c9844350f5263aa16889457b2.setContent(html_a52eef35bff8d7b20a5748cf79fb1c92);
+                var html_d05aec21d23bf6a53989775471aa90d6 = $(`<div id="html_d05aec21d23bf6a53989775471aa90d6" style="width: 100.0%; height: 100.0%;">Madrid, Spain<br>Distance: 2076 km</div>`)[0];
+                popup_ad385a0d9f42d5d4520aee640495387d.setContent(html_d05aec21d23bf6a53989775471aa90d6);
             
         
 
-        poly_line_c346e66edbb83eefe025d07c8bcea8ef.bindPopup(popup_8e25784c9844350f5263aa16889457b2)
+        poly_line_a789b25387d29069b9327ace4b2a9ecb.bindPopup(popup_ad385a0d9f42d5d4520aee640495387d)
         ;
 
         
     
     
-            var circle_marker_9ac48390cad7284587e9847affb7be53 = L.circleMarker(
+            var circle_marker_d1a505f856b0e653a4706f6ca4a196d0 = L.circleMarker(
                 [40.4168, -3.7038],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_24fd934d00a073a1f3e1e18aa6b820ae = L.popup({
+        var popup_6ab02af47fb7c8a1f61269679af1621c = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_63fec46705cf3a66e6f573422973a47a = $(`<div id="html_63fec46705cf3a66e6f573422973a47a" style="width: 100.0%; height: 100.0%;"><b>Madrid, Spain</b><br>Distance: 2077 km (1291 miles)</div>`)[0];
-                popup_24fd934d00a073a1f3e1e18aa6b820ae.setContent(html_63fec46705cf3a66e6f573422973a47a);
+                var html_e2d8b69467ff51107a786bac472e1637 = $(`<div id="html_e2d8b69467ff51107a786bac472e1637" style="width: 100.0%; height: 100.0%;"><b>Madrid, Spain</b><br>Distance: 2076 km (1290 miles)</div>`)[0];
+                popup_6ab02af47fb7c8a1f61269679af1621c.setContent(html_e2d8b69467ff51107a786bac472e1637);
             
         
 
-        circle_marker_9ac48390cad7284587e9847affb7be53.bindPopup(popup_24fd934d00a073a1f3e1e18aa6b820ae)
+        circle_marker_d1a505f856b0e653a4706f6ca4a196d0.bindPopup(popup_6ab02af47fb7c8a1f61269679af1621c)
         ;
 
         
     
     
-            circle_marker_9ac48390cad7284587e9847affb7be53.bindTooltip(
+            circle_marker_d1a505f856b0e653a4706f6ca4a196d0.bindTooltip(
                 `<div>
-                     Madrid, Spain: 2077 km
+                     Madrid, Spain: 2076 km
                  </div>`,
                 {
   "sticky": true,
@@ -942,55 +942,55 @@
             );
         
     
-            var poly_line_5b8e4d6f228dda8e59294501919eef63 = L.polyline(
-                [[42.6608774, 21.1622878], [41.0082, 28.9784]],
+            var poly_line_3fdf390308cf274a116e2a2524a94b78 = L.polyline(
+                [[42.6711682, 21.1494172], [41.0082, 28.9784]],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.6, "smoothFactor": 1.0, "stroke": true, "weight": 2}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_a011a9494782362770a53cb864c70884 = L.popup({
+        var popup_afcf596f521cbcb51f65708264bd6536 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_74af84af491cdb220cc3cda05170cfdb = $(`<div id="html_74af84af491cdb220cc3cda05170cfdb" style="width: 100.0%; height: 100.0%;">Istanbul, Turkey<br>Distance: 673 km</div>`)[0];
-                popup_a011a9494782362770a53cb864c70884.setContent(html_74af84af491cdb220cc3cda05170cfdb);
+                var html_a80a86d7e4b6e58aac5f12cd328b6e52 = $(`<div id="html_a80a86d7e4b6e58aac5f12cd328b6e52" style="width: 100.0%; height: 100.0%;">Istanbul, Turkey<br>Distance: 674 km</div>`)[0];
+                popup_afcf596f521cbcb51f65708264bd6536.setContent(html_a80a86d7e4b6e58aac5f12cd328b6e52);
             
         
 
-        poly_line_5b8e4d6f228dda8e59294501919eef63.bindPopup(popup_a011a9494782362770a53cb864c70884)
+        poly_line_3fdf390308cf274a116e2a2524a94b78.bindPopup(popup_afcf596f521cbcb51f65708264bd6536)
         ;
 
         
     
     
-            var circle_marker_a8253cfee0bd5f4002e5977752c0efa2 = L.circleMarker(
+            var circle_marker_62a35a89b9d77541bb713ce06dd0598c = L.circleMarker(
                 [41.0082, 28.9784],
                 {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "lightblue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5, "stroke": true, "weight": 3}
-            ).addTo(map_cf55f1e3f32bdba38a8b9f34db591308);
+            ).addTo(map_472ec46d098c44d44ff2b348c5a89edd);
         
     
-        var popup_b8e5fb2ad2c07d237df4864ba012c805 = L.popup({
+        var popup_dc949f05296e7035faa970219a891fa6 = L.popup({
   "maxWidth": "100%",
 });
 
         
             
-                var html_fe55f3858dae130aa08dcbb465fdc4e3 = $(`<div id="html_fe55f3858dae130aa08dcbb465fdc4e3" style="width: 100.0%; height: 100.0%;"><b>Istanbul, Turkey</b><br>Distance: 673 km (418 miles)</div>`)[0];
-                popup_b8e5fb2ad2c07d237df4864ba012c805.setContent(html_fe55f3858dae130aa08dcbb465fdc4e3);
+                var html_d72b43be8fff6bf8169e725b0892d155 = $(`<div id="html_d72b43be8fff6bf8169e725b0892d155" style="width: 100.0%; height: 100.0%;"><b>Istanbul, Turkey</b><br>Distance: 674 km (419 miles)</div>`)[0];
+                popup_dc949f05296e7035faa970219a891fa6.setContent(html_d72b43be8fff6bf8169e725b0892d155);
             
         
 
-        circle_marker_a8253cfee0bd5f4002e5977752c0efa2.bindPopup(popup_b8e5fb2ad2c07d237df4864ba012c805)
+        circle_marker_62a35a89b9d77541bb713ce06dd0598c.bindPopup(popup_dc949f05296e7035faa970219a891fa6)
         ;
 
         
     
     
-            circle_marker_a8253cfee0bd5f4002e5977752c0efa2.bindTooltip(
+            circle_marker_62a35a89b9d77541bb713ce06dd0598c.bindTooltip(
                 `<div>
-                     Istanbul, Turkey: 673 km
+                     Istanbul, Turkey: 674 km
                  </div>`,
                 {
   "sticky": true,

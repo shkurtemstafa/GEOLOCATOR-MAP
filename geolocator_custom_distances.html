@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_de75386014acb7a31a05cc57a52c87ca {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+        <div style="position: fixed; top: 10px; left: 50px; width: 300px; background-color: white;
+                    border: 2px solid #2196F3; border-radius: 5px; z-index: 9999; padding: 15px;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.3); font-family: Arial, sans-serif;">
+            <h4 style="margin: 0 0 10px 0; color: #2196F3;">📍 Custom Distance Map</h4>
+            <p style="margin: 0; font-size: 11px;"><b>From:</b> 7 Shtatori, Besiana, Medresa, Prishtinë, Komuna e Prishtinës / Opština Priština, Rajoni i Prishtinës / Prištinski okrug, 10000, Kosova / Kosovo
+📍 Prishtinë → Kosova / Kosovo</p>
+            <p style="margin: 5px 0; font-size: 11px;"><b>Cities:</b> 9</p>
+            <hr style="margin: 10px 0;">
+            <div style="max-height: 200px; overflow-y: auto; font-size: 10px;">
+        <p style="margin: 3px 0;"><span style="color: blue;">●</span> 24 Maji: 3 km</p><p style="margin: 3px 0;"><span style="color: green;">●</span> 1 Tetori: 2 km</p><p style="margin: 3px 0;"><span style="color: purple;">●</span> Abdyl Ramaj: 3 km</p><p style="margin: 3px 0;"><span style="color: orange;">●</span> Shqipëria: 209 km</p><p style="margin: 3px 0;"><span style="color: darkred;">●</span> Türkiye: 1239 km</p><p style="margin: 3px 0;"><span style="color: lightred;">●</span> France: 1581 km</p><p style="margin: 3px 0;"><span style="color: beige;">●</span> Bosna i Hercegovina / Босна и Херцеговина: 339 km</p><p style="margin: 3px 0;"><span style="color: darkblue;">●</span> United States of America: 9128 km</p><p style="margin: 3px 0;"><span style="color: darkgreen;">●</span> Srre Sree Durgabare: 7682 km</p>
+            </div>
+        </div>
+        
+    
+            <div class="folium-map" id="map_de75386014acb7a31a05cc57a52c87ca" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_de75386014acb7a31a05cc57a52c87ca = L.map(
+                "map_de75386014acb7a31a05cc57a52c87ca",
+                {
+                    center: [42.6711682, 21.1494172],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 2,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_f63f6109579e0aee3f476ae70b281820 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_f63f6109579e0aee3f476ae70b281820.addTo(map_de75386014acb7a31a05cc57a52c87ca);
+        
+    
+            var marker_c8a16777d648e1f93045397ce42ce585 = L.marker(
+                [42.6711682, 21.1494172],
+                {
+}
+            ).addTo(map_de75386014acb7a31a05cc57a52c87ca);
+        
+    
+            var icon_d488d0888bcff3acdb781f201c1f2cbc = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "star",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_141a6b9ae61eb50139834d9d9b00071e = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_d5f02c1a92cac41b71b6fe2f0dd537f8 = $(`<div id="html_d5f02c1a92cac41b71b6fe2f0dd537f8" style="width: 100.0%; height: 100.0%;"><b>📍 Your Location</b><br>7 Shtatori, Besiana, Medresa, Prishtinë, Komuna e Prishtinës / Opština Priština, Rajoni i Prishtinës / Prištinski okrug, 10000, Kosova / Kosovo 📍 Prishtinë → Kosova / Kosovo<br>Lat: 42.6712, Lon: 21.1494</div>`)[0];
+                popup_141a6b9ae61eb50139834d9d9b00071e.setContent(html_d5f02c1a92cac41b71b6fe2f0dd537f8);
+            
+        
+
+        marker_c8a16777d648e1f93045397ce42ce585.bindPopup(popup_141a6b9ae61eb50139834d9d9b00071e)
+        ;
+
+        
+    
+    
+            marker_c8a16777d648e1f93045397ce42ce585.bindTooltip(
+                `<div>
+                     Your Location
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c8a16777d648e1f93045397ce42ce585.setIcon(icon_d488d0888bcff3acdb781f201c1f2cbc);
+            
+    
+            var poly_line_9079f1775c5d2d3f4124094868c8c2e4 = L.polyline(
+                [[42.6711682, 21.1494172], [42.6573619, 21.1751745]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_de75386014acb7a31a05cc57a52c87ca);
+        
+    
+        var popup_ffc37b1932f0916b5785f70514b0e915 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_1170778ccdae0cc4721b6ae2cce67f36 = $(`<div id="html_1170778ccdae0cc4721b6ae2cce67f36" style="width: 100.0%; height: 100.0%;"><b>24 Maji, Mahalla e Muhaxherëve, Prishtinë, Komuna e Prishtinës / Opština Priština, Rajoni i Prishtinës / Prištinski okrug, 10000, Kosova / Kosovo</b><br>Distance: 3 km (2 miles)</div>`)[0];
+                popup_ffc37b1932f0916b5785f70514b0e915.setContent(html_1170778ccdae0cc4721b6ae2cce67f36);
+            
+        
+
+        poly_line_9079f1775c5d2d3f4124094868c8c2e4.bindPopup(popup_ffc37b1932f0916b5785f70514b0e915)
+        ;
+
+        
+    
+    
+            var marker_9e6baf386ae3d8d015d96c82a517ed33 = L.marker(
+                [42.6573619, 21.1751745],
+                {
+}
+            ).addTo(map_de75386014acb7a31a05cc57a52c87ca);
+        
+    
+            var icon_fb0c4e5cc227d6c0254fd258d8008426 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_fdaa5d8f607f9808f796a7879c6e9551 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_2b39be47fd72cd98da789ec9d98946b3 = $(`<div id="html_2b39be47fd72cd98da789ec9d98946b3" style="width: 100.0%; height: 100.0%;"><b>24 Maji, Mahalla e Muhaxherëve, Prishtinë, Komuna e Prishtinës / Opština Priština, Rajoni i Prishtinës / Prištinski okrug, 10000, Kosova / Kosovo</b><br>Distance: 3 km<br>(2 miles)</div>`)[0];
+                popup_fdaa5d8f607f9808f796a7879c6e9551.setContent(html_2b39be47fd72cd98da789ec9d98946b3);
+            
+        
+
+        marker_9e6baf386ae3d8d015d96c82a517ed33.bindPopup(popup_fdaa5d8f607f9808f796a7879c6e9551)
+        ;
+
+        
+    
+    
+            marker_9e6baf386ae3d8d015d96c82a517ed33.bindTooltip(
+                `<div>
+                     24 Maji, Mahalla e Muhaxherëve, Prishtinë, Komuna e Prishtinës / Opština Priština, Rajoni i Prishtinës / Prištinski okrug, 10000, Kosova / Kosovo: 3 km
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_9e6baf386ae3d8d015d96c82a517ed33.setIcon(icon_fb0c4e5cc227d6c0254fd258d8008426);
+            
+    
+            var poly_line_5581bea168d6d1f20afca03620f064a8 = L.polyline(
+                [[42.6711682, 21.1494172], [42.6614318, 21.1746447]],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "green", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_de75386014acb7a31a05cc57a52c87ca);
+        
+    
+        var popup_500c19caa92fca4cc0f369aade830e67 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_e5827b9632df51faa01df3164b0313db = $(`<div id="html_e5827b9632df51faa01df3164b0313db" style="width: 100.0%; height: 100.0%;"><b>1 Tetori, Mahalla e Muhaxherëve, Prishtinë, Komuna e Prishtinës / Opština Priština, Rajoni i Prishtinës / Prištinski okrug, 10000, Kosova / Kosovo</b><br>Distance: 2 km (1 miles)</div>`)[0];
+                popup_500c19caa92fca4cc0f369aade830e67.setContent(html_e5827b9632df51faa01df3164b0313db);
+            
+        
+
+        poly_line_5581bea168d6d1f20afca03620f064a8.bindPopup(popup_500c19caa92fca4cc0f369aade830e67)
+        ;
+
+        
+    
+    
+            var marker_2c3c446c27603e55d79f8396fe82e832 = L.marker(
+                [42.6614318, 21.1746447],
+                {
+}
+            ).addTo(map_de75386014acb7a31a05cc57a52c87ca);
+        
+    
+            var icon_8df60d8b7ff5dcd92ed7c0dce577b24e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8df447859d501085b83efea2de8df77b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_d0234a2dc6362d47a91231ffff274651 = $(`<div id="html_d0234a2dc6362d47a91231ffff274651" style="width: 100.0%; height: 100.0%;"><b>1 Tetori, Mahalla e Muhaxherëve, Prishtinë, Komuna e Prishtinës / Opština Priština, Rajoni i Prishtinës / Prištinski okrug, 10000, Kosova / Kosovo</b><br>Distance: 2 km<br>(1 miles)</div>`)[0];
+                popup_8df447859d501085b83efea2de8df77b.setContent(html_d0234a2dc6362d47a91231ffff274651);
+            
+        
+
+        marker_2c3c446c27603e55d79f8396fe82e832.bindPopup(popup_8df447859d501085b83efea2de8df77b)
+        ;
+
+        
+    
+    
+            marker_2c3c446c27603e55d79f8396fe82e832.bindTooltip(
+                `<div>
+                     1 Tetori, Mahalla e Muhaxherëve, Prishtinë, Komuna e Prishtinës / Opština Priština, Rajoni i Prishtinës / Prištinski okrug, 10000, Kosova / Kosovo: 2 km
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2c3c446c27603e55d79f8396fe82e832.setIcon(icon_8df60d8b7ff5dcd92ed7c0dce577b24e);
+            
+    
+            var poly_line_11448e074ab49433b4efb96c79dbfcc5 = L.polyline(
+                [[42.6711682, 21.1494172], [42.6671103, 21.1807229]],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "purple", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_de75386014acb7a31a05cc57a52c87ca);
+        
+    
+        var popup_4bfdac7252a8331e365c4d3fc92640c4 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_4a82637e2834e2800546f0ca6de1caf5 = $(`<div id="html_4a82637e2834e2800546f0ca6de1caf5" style="width: 100.0%; height: 100.0%;"><b>Abdyl Ramaj, Taslixhe, Prishtinë, Komuna e Prishtinës / Opština Priština, Rajoni i Prishtinës / Prištinski okrug, 10000, Kosova / Kosovo</b><br>Distance: 3 km (2 miles)</div>`)[0];
+                popup_4bfdac7252a8331e365c4d3fc92640c4.setContent(html_4a82637e2834e2800546f0ca6de1caf5);
+            
+        
+
+        poly_line_11448e074ab49433b4efb96c79dbfcc5.bindPopup(popup_4bfdac7252a8331e365c4d3fc92640c4)
+        ;
+
+        
+    
+    
+            var marker_14446fe6cece9be43fed4c980ae0dee1 = L.marker(
+                [42.6671103, 21.1807229],
+                {
+}
+            ).addTo(map_de75386014acb7a31a05cc57a52c87ca);
+        
+    
+            var icon_db85c50abe4f279d3915e4aefc29f0b1 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "purple",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_75e213d73dbbb1be689b9c5c1f1d8f33 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_b9a0fccbdd216112418d50a506f575e8 = $(`<div id="html_b9a0fccbdd216112418d50a506f575e8" style="width: 100.0%; height: 100.0%;"><b>Abdyl Ramaj, Taslixhe, Prishtinë, Komuna e Prishtinës / Opština Priština, Rajoni i Prishtinës / Prištinski okrug, 10000, Kosova / Kosovo</b><br>Distance: 3 km<br>(2 miles)</div>`)[0];
+                popup_75e213d73dbbb1be689b9c5c1f1d8f33.setContent(html_b9a0fccbdd216112418d50a506f575e8);
+            
+        
+
+        marker_14446fe6cece9be43fed4c980ae0dee1.bindPopup(popup_75e213d73dbbb1be689b9c5c1f1d8f33)
+        ;
+
+        
+    
+    
+            marker_14446fe6cece9be43fed4c980ae0dee1.bindTooltip(
+                `<div>
+                     Abdyl Ramaj, Taslixhe, Prishtinë, Komuna e Prishtinës / Opština Priština, Rajoni i Prishtinës / Prištinski okrug, 10000, Kosova / Kosovo: 3 km
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_14446fe6cece9be43fed4c980ae0dee1.setIcon(icon_db85c50abe4f279d3915e4aefc29f0b1);
+            
+    
+            var poly_line_e89014a49ceb408c21291afee9641096 = L.polyline(
+                [[42.6711682, 21.1494172], [41.000028, 19.9999619]],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "orange", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_de75386014acb7a31a05cc57a52c87ca);
+        
+    
+        var popup_8fa457e2d07bc7d6b70282fbd199941b = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_73a5fe70e31d759ad2554ac239539da2 = $(`<div id="html_73a5fe70e31d759ad2554ac239539da2" style="width: 100.0%; height: 100.0%;"><b>Shqipëria</b><br>Distance: 209 km (130 miles)</div>`)[0];
+                popup_8fa457e2d07bc7d6b70282fbd199941b.setContent(html_73a5fe70e31d759ad2554ac239539da2);
+            
+        
+
+        poly_line_e89014a49ceb408c21291afee9641096.bindPopup(popup_8fa457e2d07bc7d6b70282fbd199941b)
+        ;
+
+        
+    
+    
+            var marker_5789b26ea0feed307b0429e1274303b9 = L.marker(
+                [41.000028, 19.9999619],
+                {
+}
+            ).addTo(map_de75386014acb7a31a05cc57a52c87ca);
+        
+    
+            var icon_4a939d08d3d2bdfded7ebbf7e8d5ee1f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_849e670e8f835fb194459e6280f3feb1 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_6a3d838094c3a587664f8ee7b2292941 = $(`<div id="html_6a3d838094c3a587664f8ee7b2292941" style="width: 100.0%; height: 100.0%;"><b>Shqipëria</b><br>Distance: 209 km<br>(130 miles)</div>`)[0];
+                popup_849e670e8f835fb194459e6280f3feb1.setContent(html_6a3d838094c3a587664f8ee7b2292941);
+            
+        
+
+        marker_5789b26ea0feed307b0429e1274303b9.bindPopup(popup_849e670e8f835fb194459e6280f3feb1)
+        ;
+
+        
+    
+    
+            marker_5789b26ea0feed307b0429e1274303b9.bindTooltip(
+                `<div>
+                     Shqipëria: 209 km
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_5789b26ea0feed307b0429e1274303b9.setIcon(icon_4a939d08d3d2bdfded7ebbf7e8d5ee1f);
+            
+    
+            var poly_line_a6f7ae65eb275a2bad772bb26162985c = L.polyline(
+                [[42.6711682, 21.1494172], [39.294076, 35.2316631]],
+                {"bubblingMouseEvents": true, "color": "darkred", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "darkred", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_de75386014acb7a31a05cc57a52c87ca);
+        
+    
+        var popup_aeb757236554dac86fe32c2ef8180e9a = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_0a81c0ab4e84b398a7e88e7b3458e082 = $(`<div id="html_0a81c0ab4e84b398a7e88e7b3458e082" style="width: 100.0%; height: 100.0%;"><b>Türkiye</b><br>Distance: 1239 km (770 miles)</div>`)[0];
+                popup_aeb757236554dac86fe32c2ef8180e9a.setContent(html_0a81c0ab4e84b398a7e88e7b3458e082);
+            
+        
+
+        poly_line_a6f7ae65eb275a2bad772bb26162985c.bindPopup(popup_aeb757236554dac86fe32c2ef8180e9a)
+        ;
+
+        
+    
+    
+            var marker_85a9efa2d4d93c7dff4d2a1057e62e62 = L.marker(
+                [39.294076, 35.2316631],
+                {
+}
+            ).addTo(map_de75386014acb7a31a05cc57a52c87ca);
+        
+    
+            var icon_e563249aa35cfb68b3098a3356d36999 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkred",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ff59bb111bc69203616926de2241ab57 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_a46cb3783dc05f1345b3c664c3e4b6cc = $(`<div id="html_a46cb3783dc05f1345b3c664c3e4b6cc" style="width: 100.0%; height: 100.0%;"><b>Türkiye</b><br>Distance: 1239 km<br>(770 miles)</div>`)[0];
+                popup_ff59bb111bc69203616926de2241ab57.setContent(html_a46cb3783dc05f1345b3c664c3e4b6cc);
+            
+        
+
+        marker_85a9efa2d4d93c7dff4d2a1057e62e62.bindPopup(popup_ff59bb111bc69203616926de2241ab57)
+        ;
+
+        
+    
+    
+            marker_85a9efa2d4d93c7dff4d2a1057e62e62.bindTooltip(
+                `<div>
+                     Türkiye: 1239 km
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_85a9efa2d4d93c7dff4d2a1057e62e62.setIcon(icon_e563249aa35cfb68b3098a3356d36999);
+            
+    
+            var poly_line_c30a9cdba6a26b70243e50c0950edd87 = L.polyline(
+                [[42.6711682, 21.1494172], [46.603354, 1.8883335]],
+                {"bubblingMouseEvents": true, "color": "lightred", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "lightred", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_de75386014acb7a31a05cc57a52c87ca);
+        
+    
+        var popup_67b15c717596588a697c84dc6f257061 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_71d439560a281b1f6602f301d22ba98f = $(`<div id="html_71d439560a281b1f6602f301d22ba98f" style="width: 100.0%; height: 100.0%;"><b>France</b><br>Distance: 1581 km (982 miles)</div>`)[0];
+                popup_67b15c717596588a697c84dc6f257061.setContent(html_71d439560a281b1f6602f301d22ba98f);
+            
+        
+
+        poly_line_c30a9cdba6a26b70243e50c0950edd87.bindPopup(popup_67b15c717596588a697c84dc6f257061)
+        ;
+
+        
+    
+    
+            var marker_97001a40232ac3708973424fe2568585 = L.marker(
+                [46.603354, 1.8883335],
+                {
+}
+            ).addTo(map_de75386014acb7a31a05cc57a52c87ca);
+        
+    
+            var icon_45a3113158140496d458114c26226208 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "lightred",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e568fbbec4451cc372bed6beca2e8d62 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_d6502556c47c83fec6b211692bbd844d = $(`<div id="html_d6502556c47c83fec6b211692bbd844d" style="width: 100.0%; height: 100.0%;"><b>France</b><br>Distance: 1581 km<br>(982 miles)</div>`)[0];
+                popup_e568fbbec4451cc372bed6beca2e8d62.setContent(html_d6502556c47c83fec6b211692bbd844d);
+            
+        
+
+        marker_97001a40232ac3708973424fe2568585.bindPopup(popup_e568fbbec4451cc372bed6beca2e8d62)
+        ;
+
+        
+    
+    
+            marker_97001a40232ac3708973424fe2568585.bindTooltip(
+                `<div>
+                     France: 1581 km
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_97001a40232ac3708973424fe2568585.setIcon(icon_45a3113158140496d458114c26226208);
+            
+    
+            var poly_line_c29be88dfd66ae53677e7a65902636b0 = L.polyline(
+                [[42.6711682, 21.1494172], [44.3053476, 17.5961467]],
+                {"bubblingMouseEvents": true, "color": "beige", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "beige", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_de75386014acb7a31a05cc57a52c87ca);
+        
+    
+        var popup_58918c79f908042d02c421532305e575 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_d2a1053e0fa55e7e6d6fb02e93b8618d = $(`<div id="html_d2a1053e0fa55e7e6d6fb02e93b8618d" style="width: 100.0%; height: 100.0%;"><b>Bosna i Hercegovina / Босна и Херцеговина</b><br>Distance: 339 km (211 miles)</div>`)[0];
+                popup_58918c79f908042d02c421532305e575.setContent(html_d2a1053e0fa55e7e6d6fb02e93b8618d);
+            
+        
+
+        poly_line_c29be88dfd66ae53677e7a65902636b0.bindPopup(popup_58918c79f908042d02c421532305e575)
+        ;
+
+        
+    
+    
+            var marker_6605b178a49d1c517b4d7351737ba062 = L.marker(
+                [44.3053476, 17.5961467],
+                {
+}
+            ).addTo(map_de75386014acb7a31a05cc57a52c87ca);
+        
+    
+            var icon_91926509c911c75b6eb3cc07c1532426 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "beige",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0f8981e500cfe548890c18046a1e33af = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_fcafa768955e8816068eb77e61ccbc73 = $(`<div id="html_fcafa768955e8816068eb77e61ccbc73" style="width: 100.0%; height: 100.0%;"><b>Bosna i Hercegovina / Босна и Херцеговина</b><br>Distance: 339 km<br>(211 miles)</div>`)[0];
+                popup_0f8981e500cfe548890c18046a1e33af.setContent(html_fcafa768955e8816068eb77e61ccbc73);
+            
+        
+
+        marker_6605b178a49d1c517b4d7351737ba062.bindPopup(popup_0f8981e500cfe548890c18046a1e33af)
+        ;
+
+        
+    
+    
+            marker_6605b178a49d1c517b4d7351737ba062.bindTooltip(
+                `<div>
+                     Bosna i Hercegovina / Босна и Херцеговина: 339 km
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_6605b178a49d1c517b4d7351737ba062.setIcon(icon_91926509c911c75b6eb3cc07c1532426);
+            
+    
+            var poly_line_a6c623d25dec21d96d26aa9432e6eabc = L.polyline(
+                [[42.6711682, 21.1494172], [39.7837304, -100.445882]],
+                {"bubblingMouseEvents": true, "color": "darkblue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "darkblue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_de75386014acb7a31a05cc57a52c87ca);
+        
+    
+        var popup_7b6104664be28731438894e1b0afe6c4 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_49916f43a131f143bea7ecee586298da = $(`<div id="html_49916f43a131f143bea7ecee586298da" style="width: 100.0%; height: 100.0%;"><b>United States of America</b><br>Distance: 9128 km (5672 miles)</div>`)[0];
+                popup_7b6104664be28731438894e1b0afe6c4.setContent(html_49916f43a131f143bea7ecee586298da);
+            
+        
+
+        poly_line_a6c623d25dec21d96d26aa9432e6eabc.bindPopup(popup_7b6104664be28731438894e1b0afe6c4)
+        ;
+
+        
+    
+    
+            var marker_667dc2b38b653f51375c07602e3729fb = L.marker(
+                [39.7837304, -100.445882],
+                {
+}
+            ).addTo(map_de75386014acb7a31a05cc57a52c87ca);
+        
+    
+            var icon_2f308c002cd69b29d2cc556e29228fd7 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkblue",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c196b203945ee8aaccba130124c36296 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_341eb9e21460fc5bb7aee9f0513331d2 = $(`<div id="html_341eb9e21460fc5bb7aee9f0513331d2" style="width: 100.0%; height: 100.0%;"><b>United States of America</b><br>Distance: 9128 km<br>(5672 miles)</div>`)[0];
+                popup_c196b203945ee8aaccba130124c36296.setContent(html_341eb9e21460fc5bb7aee9f0513331d2);
+            
+        
+
+        marker_667dc2b38b653f51375c07602e3729fb.bindPopup(popup_c196b203945ee8aaccba130124c36296)
+        ;
+
+        
+    
+    
+            marker_667dc2b38b653f51375c07602e3729fb.bindTooltip(
+                `<div>
+                     United States of America: 9128 km
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_667dc2b38b653f51375c07602e3729fb.setIcon(icon_2f308c002cd69b29d2cc556e29228fd7);
+            
+    
+            var poly_line_aba30b688fea896b3624e9f37be5be88 = L.polyline(
+                [[42.6711682, 21.1494172], [16.4645963, 97.6276983]],
+                {"bubblingMouseEvents": true, "color": "darkgreen", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "darkgreen", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 3}
+            ).addTo(map_de75386014acb7a31a05cc57a52c87ca);
+        
+    
+        var popup_b15b7cdfd0a14e927436b861aec9f553 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_0acdbffaec69444d97c63c16debbfdc3 = $(`<div id="html_0acdbffaec69444d97c63c16debbfdc3" style="width: 100.0%; height: 100.0%;"><b>Srre Sree Durgabare, 118, အထက်လမ်းမကြီး, ဘိုကုန်းရပ်ကွက်, မော်လမြိုင်, မော်လမြိုင်ခရိုင်, မွန်ပြည်နယ်, 12032, မြန်မာ</b><br>Distance: 7682 km (4773 miles)</div>`)[0];
+                popup_b15b7cdfd0a14e927436b861aec9f553.setContent(html_0acdbffaec69444d97c63c16debbfdc3);
+            
+        
+
+        poly_line_aba30b688fea896b3624e9f37be5be88.bindPopup(popup_b15b7cdfd0a14e927436b861aec9f553)
+        ;
+
+        
+    
+    
+            var marker_16851050a650fea9550aa9876410af82 = L.marker(
+                [16.4645963, 97.6276983],
+                {
+}
+            ).addTo(map_de75386014acb7a31a05cc57a52c87ca);
+        
+    
+            var icon_3f0325c748d803fb5b70eebc9c0885cc = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkgreen",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_2b5fb3413a2c238f74ffbfaa66fe2272 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_5504d32a3466cdf091261079b437ecfe = $(`<div id="html_5504d32a3466cdf091261079b437ecfe" style="width: 100.0%; height: 100.0%;"><b>Srre Sree Durgabare, 118, အထက်လမ်းမကြီး, ဘိုကုန်းရပ်ကွက်, မော်လမြိုင်, မော်လမြိုင်ခရိုင်, မွန်ပြည်နယ်, 12032, မြန်မာ</b><br>Distance: 7682 km<br>(4773 miles)</div>`)[0];
+                popup_2b5fb3413a2c238f74ffbfaa66fe2272.setContent(html_5504d32a3466cdf091261079b437ecfe);
+            
+        
+
+        marker_16851050a650fea9550aa9876410af82.bindPopup(popup_2b5fb3413a2c238f74ffbfaa66fe2272)
+        ;
+
+        
+    
+    
+            marker_16851050a650fea9550aa9876410af82.bindTooltip(
+                `<div>
+                     Srre Sree Durgabare, 118, အထက်လမ်းမကြီး, ဘိုကုန်းရပ်ကွက်, မော်လမြိုင်, မော်လမြိုင်ခရိုင်, မွန်ပြည်နယ်, 12032, မြန်မာ: 7682 km
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_16851050a650fea9550aa9876410af82.setIcon(icon_3f0325c748d803fb5b70eebc9c0885cc);
+            
+</script>
+</html>

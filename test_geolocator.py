@@ -56,8 +56,12 @@ def test_application():
             ('Clear input fields', 'clear_input_fields'),
             ('Save to database', 'save_to_database'),
             ('Distance map', 'open_map_with_distances'),
+            ('Searchable distance map', 'open_searchable_distance_map'),
             ('Import random address', 'import_single_address_from_csv'),
-            ('Create database table', 'create_database_table'),
+            ('SQLite database', 'init_sqlite_db'),
+            ('Favorites', 'save_favorite'),
+            ('Statistics', 'get_statistics'),
+            ('Timezone', 'get_timezone_info'),
         ]
         
         all_present = True

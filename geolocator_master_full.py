@@ -52,6 +52,10 @@ try:
 except Exception:
     POSTGIS_AVAILABLE = False
 
+# SQLite - Built-in, no installation needed!
+import sqlite3
+SQLITE_AVAILABLE = True
+
 # -------------------------
 # Configuration
 # -------------------------
@@ -83,8 +87,14 @@ POSTGIS_DB = ""
 POSTGIS_USER = ""
 POSTGIS_PASSWORD = ""
 
+# SQLite Database (built-in, no setup needed!)
+SQLITE_DB_PATH = "geolocator_data.db"
+
 # Store multiple points for GIS operations
 stored_points = []
+
+# Favorite locations
+favorite_locations = []
 
 # -------------------------
 # Helper utilities
@@ -124,6 +134,23 @@ def get_elevation(lat, lon):
             return data["results"][0].get("elevation")
     except Exception:
         return None
+    return None
+
+def get_timezone_info(lat, lon):
+    """Get timezone information for coordinates using free API"""
+    try:
+        # Using TimeAPI.io (free, no key needed)
+        url = f"https://timeapi.io/api/TimeZone/coordinate?latitude={lat}&longitude={lon}"
+        resp = requests.get(url, timeout=8)
+        if resp.status_code == 200:
+            data = resp.json()
+            return {
+                'timezone': data.get('timeZone', 'Unknown'),
+                'current_time': data.get('currentLocalTime', 'Unknown'),
+                'utc_offset': data.get('currentUtcOffset', {}).get('seconds', 0) / 3600
+            }
+    except:
+        pass
     return None
 
 def use_google_geocode_address(address):
@@ -503,26 +530,97 @@ def insert_point_postgis(table_name, lat, lon, name="", description=""):
             conn.close()
         return False
 
-def save_to_database(lat, lon, name, search_type):
-    """Automatically save search to database if connected."""
-    if not POSTGIS_HOST or not POSTGIS_DB:
-        return  # Not configured
-    
+def init_sqlite_db():
+    """Initialize SQLite database - automatic, no setup needed!"""
     try:
-        conn = connect_postgis()
-        if conn:
-            cur = conn.cursor()
-            # Try to insert into locations table
-            query = """
-            INSERT INTO locations (name, search_type, latitude, longitude, geom, search_date)
-            VALUES (%s, %s, %s, %s, ST_SetSRID(ST_MakePoint(%s, %s), 4326), NOW())
-            """
-            cur.execute(query, (name, search_type, float(lat), float(lon), float(lon), float(lat)))
-            conn.commit()
-            cur.close()
-            conn.close()
-    except Exception:
-        pass  # Silently fail if table doesn't exist
+        conn = sqlite3.connect(SQLITE_DB_PATH)
+        cur = conn.cursor()
+        
+        # Create locations table
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS locations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            search_type TEXT,
+            latitude REAL,
+            longitude REAL,
+            search_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+        
+        # Create favorites table
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS favorites (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT UNIQUE,
+            address TEXT,
+            latitude REAL,
+            longitude REAL,
+            notes TEXT,
+            created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+        
+        # Create statistics table
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS statistics (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            stat_date DATE,
+            search_count INTEGER DEFAULT 0,
+            UNIQUE(stat_date)
+        )
+        """)
+        
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"SQLite init error: {e}")
+        return False
+
+def save_to_database(lat, lon, name, search_type):
+    """Automatically save search to SQLite database."""
+    try:
+        conn = sqlite3.connect(SQLITE_DB_PATH)
+        cur = conn.cursor()
+        
+        # Insert location
+        cur.execute("""
+        INSERT INTO locations (name, search_type, latitude, longitude)
+        VALUES (?, ?, ?, ?)
+        """, (name, search_type, float(lat), float(lon)))
+        
+        # Update statistics
+        from datetime import date
+        today = date.today().isoformat()
+        cur.execute("""
+        INSERT INTO statistics (stat_date, search_count)
+        VALUES (?, 1)
+        ON CONFLICT(stat_date) DO UPDATE SET search_count = search_count + 1
+        """, (today,))
+        
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"Save to DB error: {e}")
+        pass  # Silently fail
+    
+    # Also try PostGIS if configured
+    if POSTGIS_HOST and POSTGIS_DB:
+        try:
+            conn = connect_postgis()
+            if conn:
+                cur = conn.cursor()
+                query = """
+                INSERT INTO locations (name, search_type, latitude, longitude, geom, search_date)
+                VALUES (%s, %s, %s, %s, ST_SetSRID(ST_MakePoint(%s, %s), 4326), NOW())
+                """
+                cur.execute(query, (name, search_type, float(lat), float(lon), float(lon), float(lat)))
+                conn.commit()
+                cur.close()
+                conn.close()
+        except Exception:
+            pass
 
 def find_points_within_radius(table_name, lat, lon, radius_meters):
     """Find all points within radius using PostGIS spatial query."""
@@ -604,6 +702,84 @@ def clear_input_fields():
     lon_entry.delete(0, tk.END)
     ip_entry.delete(0, tk.END)
 
+def load_favorites():
+    """Load favorites from database"""
+    global favorite_locations
+    try:
+        conn = sqlite3.connect(SQLITE_DB_PATH)
+        cur = conn.cursor()
+        cur.execute("SELECT name, address, latitude, longitude, notes FROM favorites ORDER BY name")
+        favorite_locations = [{'name': row[0], 'address': row[1], 'lat': row[2], 'lon': row[3], 'notes': row[4]} for row in cur.fetchall()]
+        conn.close()
+    except:
+        favorite_locations = []
+
+def save_favorite(name, address, lat, lon, notes=""):
+    """Save location to favorites"""
+    try:
+        conn = sqlite3.connect(SQLITE_DB_PATH)
+        cur = conn.cursor()
+        cur.execute("""
+        INSERT OR REPLACE INTO favorites (name, address, latitude, longitude, notes)
+        VALUES (?, ?, ?, ?, ?)
+        """, (name, address, float(lat), float(lon), notes))
+        conn.commit()
+        conn.close()
+        load_favorites()
+        return True
+    except Exception as e:
+        print(f"Save favorite error: {e}")
+        return False
+
+def delete_favorite(name):
+    """Delete favorite location"""
+    try:
+        conn = sqlite3.connect(SQLITE_DB_PATH)
+        cur = conn.cursor()
+        cur.execute("DELETE FROM favorites WHERE name = ?", (name,))
+        conn.commit()
+        conn.close()
+        load_favorites()
+        return True
+    except:
+        return False
+
+def get_statistics():
+    """Get search statistics"""
+    try:
+        conn = sqlite3.connect(SQLITE_DB_PATH)
+        cur = conn.cursor()
+        
+        # Total searches
+        cur.execute("SELECT COUNT(*) FROM locations")
+        total = cur.fetchone()[0]
+        
+        # By type
+        cur.execute("SELECT search_type, COUNT(*) FROM locations GROUP BY search_type")
+        by_type = dict(cur.fetchall())
+        
+        # Recent searches
+        cur.execute("SELECT name, search_date FROM locations ORDER BY search_date DESC LIMIT 10")
+        recent = cur.fetchall()
+        
+        # Today's searches
+        from datetime import date
+        today = date.today().isoformat()
+        cur.execute("SELECT search_count FROM statistics WHERE stat_date = ?", (today,))
+        result = cur.fetchone()
+        today_count = result[0] if result else 0
+        
+        conn.close()
+        
+        return {
+            'total': total,
+            'by_type': by_type,
+            'recent': recent,
+            'today': today_count
+        }
+    except:
+        return {'total': 0, 'by_type': {}, 'recent': [], 'today': 0}
+
 def add_to_history(entry):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     history.append((timestamp, entry))
@@ -657,6 +833,12 @@ def on_find_coordinates():
             return
         data = extract_address_fields(location)
         elevation = get_elevation(data["latitude"], data["longitude"])
+        tz_info = get_timezone_info(data["latitude"], data["longitude"])
+        
+        timezone_str = ""
+        if tz_info:
+            timezone_str = f"{tz_info['timezone']} (UTC{tz_info['utc_offset']:+.1f}) - {tz_info['current_time']}"
+        
         out = {
             "Latitude": data["latitude"],
             "Longitude": data["longitude"],
@@ -666,7 +848,7 @@ def on_find_coordinates():
             "Region": data["state"] or "",
             "City": data["city"] or "",
             "Postal Code": data["postcode"] or "",
-            "Timezone": "",  # timezone from lat/lon can be fetched via timezone API if needed
+            "Timezone": timezone_str,
             "ISP": "",
             "AS": "",
             "Bounding Box": ", ".join(data["boundingbox"]) if data["boundingbox"] else ""
@@ -700,6 +882,12 @@ def on_find_address():
             return
         data = extract_address_fields(location)
         elevation = get_elevation(lat, lon)
+        tz_info = get_timezone_info(lat, lon)
+        
+        timezone_str = ""
+        if tz_info:
+            timezone_str = f"{tz_info['timezone']} (UTC{tz_info['utc_offset']:+.1f}) - {tz_info['current_time']}"
+        
         out = {
             "Latitude": data["latitude"],
             "Longitude": data["longitude"],
@@ -709,7 +897,7 @@ def on_find_address():
             "Region": data["state"] or "",
             "City": data["city"] or "",
             "Postal Code": data["postcode"] or "",
-            "Timezone": "",
+            "Timezone": timezone_str,
             "ISP": "",
             "AS": "",
             "Bounding Box": ", ".join(data["boundingbox"]) if data["boundingbox"] else ""
@@ -859,6 +1047,192 @@ def open_map_with_distances():
     m.save(outpath)
     webbrowser.open("file://" + os.path.abspath(outpath))
     messagebox.showinfo("Map Opened", "Distance map opened in browser!\n\nBlue lines show distances to 15 major world cities.")
+
+def open_searchable_distance_map():
+    """Create interactive map where you can search and add multiple cities to see distances."""
+    lat = result_vars["Latitude"].get()
+    lon = result_vars["Longitude"].get()
+    if not lat or not lon:
+        messagebox.showerror("No coordinates", "Please search for a location first.")
+        return
+    
+    try:
+        latf = float(lat)
+        lonf = float(lon)
+    except:
+        messagebox.showerror("Invalid", "Invalid coordinates.")
+        return
+    
+    # Create dialog for searching cities
+    dialog = tk.Toplevel(root)
+    dialog.title("Search Cities for Distance Map")
+    dialog.geometry("500x600")
+    dialog.configure(bg=BG_COLOR)
+    
+    # Title
+    tk.Label(dialog, text="🗺️ Create Custom Distance Map", 
+             font=("Segoe UI", 14, "bold"), bg=BG_COLOR, fg=PRIMARY_BLUE).pack(pady=10)
+    
+    # Info
+    info_text = f"Your location: {result_vars['Display Address'].get() or 'Current Location'}\nLat: {latf:.4f}, Lon: {lonf:.4f}"
+    tk.Label(dialog, text=info_text, font=("Segoe UI", 9), bg=BG_COLOR, fg=TEXT_SECONDARY).pack(pady=5)
+    
+    # Search frame
+    search_frame = tk.LabelFrame(dialog, text="Search and Add Cities", bg=CARD_BG, padx=10, pady=10)
+    search_frame.pack(fill="x", padx=20, pady=10)
+    
+    tk.Label(search_frame, text="Enter city/country name:", bg=CARD_BG).pack(anchor="w")
+    search_entry = tk.Entry(search_frame, width=40, font=("Segoe UI", 10))
+    search_entry.pack(fill="x", pady=5)
+    
+    # List of added cities
+    cities_list = []
+    
+    listbox_frame = tk.LabelFrame(dialog, text="Added Cities (click to remove)", bg=CARD_BG, padx=10, pady=10)
+    listbox_frame.pack(fill="both", expand=True, padx=20, pady=10)
+    
+    cities_listbox = tk.Listbox(listbox_frame, height=15, font=("Segoe UI", 9))
+    cities_listbox.pack(side="left", fill="both", expand=True)
+    
+    scrollbar = tk.Scrollbar(listbox_frame, command=cities_listbox.yview)
+    scrollbar.pack(side="right", fill="y")
+    cities_listbox.config(yscrollcommand=scrollbar.set)
+    
+    def add_city():
+        city_name = search_entry.get().strip()
+        if not city_name:
+            messagebox.showerror("Error", "Please enter a city name")
+            return
+        
+        try:
+            # Geocode the city
+            location = geolocator.geocode(city_name, exactly_one=True, timeout=10)
+            if not location:
+                messagebox.showerror("Not found", f"City not found: {city_name}")
+                return
+            
+            # Calculate distance
+            dist = calculate_distance(latf, lonf, location.latitude, location.longitude)
+            dist_km = dist / 1000
+            
+            # Add to list
+            city_data = {
+                'name': location.address,
+                'lat': location.latitude,
+                'lon': location.longitude,
+                'distance_km': dist_km,
+                'distance_miles': dist / 1609.34
+            }
+            cities_list.append(city_data)
+            
+            # Add to listbox
+            cities_listbox.insert(tk.END, f"{location.address} - {dist_km:.0f} km ({dist/1609.34:.0f} mi)")
+            
+            # Clear search
+            search_entry.delete(0, tk.END)
+            
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to add city: {e}")
+    
+    def remove_city():
+        selection = cities_listbox.curselection()
+        if selection:
+            idx = selection[0]
+            cities_listbox.delete(idx)
+            cities_list.pop(idx)
+    
+    def create_map():
+        if not cities_list:
+            messagebox.showerror("Error", "Please add at least one city")
+            return
+        
+        # Create map
+        m = folium.Map(location=[latf, lonf], zoom_start=2, tiles='OpenStreetMap')
+        
+        # Add current location (red star)
+        folium.Marker(
+            [latf, lonf],
+            popup=f"<b>📍 Your Location</b><br>{result_vars['Display Address'].get() or 'Current Location'}<br>Lat: {latf:.4f}, Lon: {lonf:.4f}",
+            tooltip="Your Location",
+            icon=folium.Icon(color='red', icon='star', prefix='glyphicon')
+        ).add_to(m)
+        
+        # Color palette for different cities
+        colors = ['blue', 'green', 'purple', 'orange', 'darkred', 'lightred', 'beige', 'darkblue', 
+                  'darkgreen', 'cadetblue', 'darkpurple', 'pink', 'lightblue', 'lightgreen', 'gray']
+        
+        # Add lines and markers for each city
+        for idx, city in enumerate(cities_list):
+            color = colors[idx % len(colors)]
+            
+            # Add line
+            folium.PolyLine(
+                locations=[[latf, lonf], [city['lat'], city['lon']]],
+                color=color,
+                weight=3,
+                opacity=0.7,
+                popup=f"<b>{city['name']}</b><br>Distance: {city['distance_km']:.0f} km ({city['distance_miles']:.0f} miles)"
+            ).add_to(m)
+            
+            # Add city marker
+            folium.Marker(
+                location=[city['lat'], city['lon']],
+                popup=f"<b>{city['name']}</b><br>Distance: {city['distance_km']:.0f} km<br>({city['distance_miles']:.0f} miles)",
+                tooltip=f"{city['name']}: {city['distance_km']:.0f} km",
+                icon=folium.Icon(color=color, icon='info-sign')
+            ).add_to(m)
+        
+        # Add legend/title
+        legend_html = f'''
+        <div style="position: fixed; top: 10px; left: 50px; width: 300px; background-color: white;
+                    border: 2px solid #2196F3; border-radius: 5px; z-index: 9999; padding: 15px;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.3); font-family: Arial, sans-serif;">
+            <h4 style="margin: 0 0 10px 0; color: #2196F3;">📍 Custom Distance Map</h4>
+            <p style="margin: 0; font-size: 11px;"><b>From:</b> {result_vars['Display Address'].get() or 'Current Location'}</p>
+            <p style="margin: 5px 0; font-size: 11px;"><b>Cities:</b> {len(cities_list)}</p>
+            <hr style="margin: 10px 0;">
+            <div style="max-height: 200px; overflow-y: auto; font-size: 10px;">
+        '''
+        
+        for idx, city in enumerate(cities_list):
+            color = colors[idx % len(colors)]
+            legend_html += f'<p style="margin: 3px 0;"><span style="color: {color};">●</span> {city["name"].split(",")[0]}: {city["distance_km"]:.0f} km</p>'
+        
+        legend_html += '''
+            </div>
+        </div>
+        '''
+        m.get_root().html.add_child(folium.Element(legend_html))
+        
+        # Save and open
+        outpath = os.path.join(os.getcwd(), "geolocator_custom_distances.html")
+        m.save(outpath)
+        webbrowser.open("file://" + os.path.abspath(outpath))
+        
+        messagebox.showinfo("Success", f"Custom distance map created with {len(cities_list)} cities!\n\nMap opened in browser.")
+        dialog.destroy()
+    
+    # Buttons
+    btn_frame = tk.Frame(search_frame, bg=CARD_BG)
+    btn_frame.pack(fill="x", pady=5)
+    
+    tk.Button(btn_frame, text="Add City", bg=SUCCESS_GREEN, fg="white", 
+              command=add_city, font=("Segoe UI", 9)).pack(side="left", padx=5)
+    tk.Button(btn_frame, text="Remove Selected", bg=ERROR_RED, fg="white", 
+              command=remove_city, font=("Segoe UI", 9)).pack(side="left", padx=5)
+    
+    # Bind Enter key to add city
+    search_entry.bind('<Return>', lambda e: add_city())
+    cities_listbox.bind('<Delete>', lambda e: remove_city())
+    
+    # Bottom buttons
+    bottom_frame = tk.Frame(dialog, bg=BG_COLOR)
+    bottom_frame.pack(fill="x", padx=20, pady=10)
+    
+    tk.Button(bottom_frame, text="Create Map", bg=PRIMARY_BLUE, fg="white", 
+              command=create_map, font=("Segoe UI", 10, "bold"), width=20).pack(side="left", padx=5)
+    tk.Button(bottom_frame, text="Cancel", bg=TEXT_SECONDARY, fg="white", 
+              command=dialog.destroy, font=("Segoe UI", 10), width=10).pack(side="right", padx=5)
 
 def open_map_in_browser(satellite=False):
     """Krijon një hartë HTML të bukur dhe të saktë me informacione të detajuara"""
@@ -1609,6 +1983,184 @@ def on_postgis_insert():
     
     tk.Button(dialog, text="Insert", command=insert).pack(pady=10)
 
+def on_add_to_favorites():
+    """Add current location to favorites"""
+    lat = result_vars["Latitude"].get()
+    lon = result_vars["Longitude"].get()
+    address = result_vars["Display Address"].get()
+    
+    if not lat or not lon:
+        messagebox.showerror("Error", "No location to save. Search for a location first.")
+        return
+    
+    # Dialog to enter name
+    dialog = tk.Toplevel(root)
+    dialog.title("Add to Favorites")
+    dialog.geometry("400x250")
+    dialog.configure(bg=BG_COLOR)
+    
+    tk.Label(dialog, text="⭐ Add to Favorites", font=("Segoe UI", 12, "bold"), bg=BG_COLOR).pack(pady=10)
+    
+    tk.Label(dialog, text="Location:", bg=BG_COLOR).pack(anchor="w", padx=20)
+    tk.Label(dialog, text=address[:60] + "..." if len(address) > 60 else address, 
+             bg=BG_COLOR, fg=TEXT_SECONDARY, wraplength=350).pack(anchor="w", padx=20, pady=5)
+    
+    tk.Label(dialog, text="Favorite Name:", bg=BG_COLOR).pack(anchor="w", padx=20, pady=(10,0))
+    name_entry = tk.Entry(dialog, width=40)
+    name_entry.pack(padx=20, pady=5)
+    name_entry.insert(0, address.split(",")[0] if "," in address else address[:30])
+    
+    tk.Label(dialog, text="Notes (optional):", bg=BG_COLOR).pack(anchor="w", padx=20, pady=(10,0))
+    notes_entry = tk.Entry(dialog, width=40)
+    notes_entry.pack(padx=20, pady=5)
+    
+    def save():
+        name = name_entry.get().strip()
+        if not name:
+            messagebox.showerror("Error", "Please enter a name")
+            return
+        
+        notes = notes_entry.get().strip()
+        if save_favorite(name, address, lat, lon, notes):
+            messagebox.showinfo("Success", f"✅ '{name}' added to favorites!")
+            dialog.destroy()
+            update_favorites_dropdown()
+        else:
+            messagebox.showerror("Error", "Failed to save favorite")
+    
+    tk.Button(dialog, text="Save", bg=SUCCESS_GREEN, fg="white", command=save, width=15).pack(pady=15)
+
+def on_load_favorite():
+    """Load favorite location"""
+    if not favorite_locations:
+        messagebox.showinfo("No Favorites", "No favorite locations saved yet.\n\nSearch for a location and click 'Add to Favorites'.")
+        return
+    
+    # Dialog to select favorite
+    dialog = tk.Toplevel(root)
+    dialog.title("Load Favorite Location")
+    dialog.geometry("500x400")
+    dialog.configure(bg=BG_COLOR)
+    
+    tk.Label(dialog, text="⭐ Your Favorite Locations", font=("Segoe UI", 12, "bold"), bg=BG_COLOR).pack(pady=10)
+    
+    # Listbox
+    frame = tk.Frame(dialog, bg=BG_COLOR)
+    frame.pack(fill="both", expand=True, padx=20, pady=10)
+    
+    listbox = tk.Listbox(frame, font=("Segoe UI", 9), height=15)
+    listbox.pack(side="left", fill="both", expand=True)
+    
+    scrollbar = tk.Scrollbar(frame, command=listbox.yview)
+    scrollbar.pack(side="right", fill="y")
+    listbox.config(yscrollcommand=scrollbar.set)
+    
+    # Populate listbox
+    for fav in favorite_locations:
+        listbox.insert(tk.END, f"{fav['name']} - {fav['address'][:50]}")
+    
+    def load():
+        selection = listbox.curselection()
+        if not selection:
+            messagebox.showerror("Error", "Please select a favorite")
+            return
+        
+        fav = favorite_locations[selection[0]]
+        
+        # Load into fields
+        address_entry.delete(0, tk.END)
+        lat_entry.delete(0, tk.END)
+        lon_entry.delete(0, tk.END)
+        ip_entry.delete(0, tk.END)
+        
+        lat_entry.insert(0, str(fav['lat']))
+        lon_entry.insert(0, str(fav['lon']))
+        
+        # Trigger search
+        on_find_address()
+        dialog.destroy()
+    
+    def delete():
+        selection = listbox.curselection()
+        if not selection:
+            messagebox.showerror("Error", "Please select a favorite to delete")
+            return
+        
+        fav = favorite_locations[selection[0]]
+        if messagebox.askyesno("Confirm", f"Delete '{fav['name']}' from favorites?"):
+            if delete_favorite(fav['name']):
+                listbox.delete(selection[0])
+                messagebox.showinfo("Deleted", "Favorite deleted")
+                update_favorites_dropdown()
+    
+    # Buttons
+    btn_frame = tk.Frame(dialog, bg=BG_COLOR)
+    btn_frame.pack(pady=10)
+    
+    tk.Button(btn_frame, text="Load", bg=PRIMARY_BLUE, fg="white", command=load, width=12).pack(side="left", padx=5)
+    tk.Button(btn_frame, text="Delete", bg=ERROR_RED, fg="white", command=delete, width=12).pack(side="left", padx=5)
+    tk.Button(btn_frame, text="Cancel", bg=TEXT_SECONDARY, fg="white", command=dialog.destroy, width=12).pack(side="left", padx=5)
+
+def on_show_statistics():
+    """Show statistics dashboard"""
+    stats = get_statistics()
+    
+    # Dialog
+    dialog = tk.Toplevel(root)
+    dialog.title("Statistics Dashboard")
+    dialog.geometry("500x500")
+    dialog.configure(bg=BG_COLOR)
+    
+    tk.Label(dialog, text="📊 Statistics Dashboard", font=("Segoe UI", 14, "bold"), bg=BG_COLOR).pack(pady=10)
+    
+    # Stats frame
+    stats_frame = tk.LabelFrame(dialog, text="Search Statistics", bg=CARD_BG, padx=20, pady=15)
+    stats_frame.pack(fill="x", padx=20, pady=10)
+    
+    tk.Label(stats_frame, text=f"Total Searches: {stats['total']}", font=("Segoe UI", 11, "bold"), bg=CARD_BG).pack(anchor="w", pady=5)
+    tk.Label(stats_frame, text=f"Today: {stats['today']}", font=("Segoe UI", 10), bg=CARD_BG).pack(anchor="w", pady=2)
+    
+    if stats['by_type']:
+        tk.Label(stats_frame, text="\nBy Type:", font=("Segoe UI", 10, "bold"), bg=CARD_BG).pack(anchor="w", pady=5)
+        for search_type, count in stats['by_type'].items():
+            tk.Label(stats_frame, text=f"  • {search_type}: {count}", font=("Segoe UI", 9), bg=CARD_BG).pack(anchor="w")
+    
+    # Recent searches
+    recent_frame = tk.LabelFrame(dialog, text="Recent Searches", bg=CARD_BG, padx=20, pady=15)
+    recent_frame.pack(fill="both", expand=True, padx=20, pady=10)
+    
+    if stats['recent']:
+        for name, date in stats['recent'][:10]:
+            tk.Label(recent_frame, text=f"• {name[:50]} - {date}", font=("Segoe UI", 8), bg=CARD_BG).pack(anchor="w", pady=2)
+    else:
+        tk.Label(recent_frame, text="No searches yet", font=("Segoe UI", 9), bg=CARD_BG, fg=TEXT_SECONDARY).pack()
+    
+    tk.Button(dialog, text="Close", bg=PRIMARY_BLUE, fg="white", command=dialog.destroy, width=15).pack(pady=10)
+
+def update_favorites_dropdown():
+    """Update favorites dropdown if it exists"""
+    load_favorites()
+    # Update dropdown menu if it exists
+    try:
+        if 'favorites_menu' in globals():
+            favorites_menu.delete(0, tk.END)
+            if favorite_locations:
+                for fav in favorite_locations:
+                    favorites_menu.add_command(label=fav['name'], 
+                                              command=lambda f=fav: load_favorite_quick(f))
+            else:
+                favorites_menu.add_command(label="No favorites yet", state="disabled")
+    except:
+        pass
+
+def load_favorite_quick(fav):
+    """Quick load favorite"""
+    lat_entry.delete(0, tk.END)
+    lon_entry.delete(0, tk.END)
+    lat_entry.insert(0, str(fav['lat']))
+    lon_entry.insert(0, str(fav['lon']))
+    on_find_address()
+
 def on_create_table():
     """Create the locations table in PostGIS."""
     if not POSTGIS_AVAILABLE:
@@ -1786,9 +2338,13 @@ title_lbl.pack(pady=(10,6))
 main_frame = tk.Frame(root, bg=BG_COLOR)
 main_frame.pack(fill="both", expand=True, padx=10, pady=6)
 
+# Configure main_frame to use grid for better control
+main_frame.grid_columnconfigure(0, weight=3)  # Left side gets 60% width
+main_frame.grid_columnconfigure(1, weight=2)  # Right side gets 40% width
+
 # Left: inputs and controls with scrollbar (both vertical and horizontal)
 left_container = tk.Frame(main_frame, bg=BG_COLOR)
-left_container.pack(side="left", fill="both", padx=(0,12))
+left_container.grid(row=0, column=0, sticky="nsew", padx=(0, 15))
 
 # Create a frame for scrollbars and canvas
 scroll_frame = tk.Frame(left_container, bg=BG_COLOR)
@@ -1920,6 +2476,16 @@ ip_entry = tk.Entry(ip_card, width=30, font=("Segoe UI", 10))
 ip_entry.grid(row=0, column=1, padx=6, pady=4)
 tk.Button(ip_card, text="Locate IP", bg=PRIMARY_BLUE, fg="white", command=on_find_ip).grid(row=0, column=2, padx=6)
 
+# Favorites & Quick Access
+favorites_card = tk.LabelFrame(left, text="⭐ Favorites & Quick Access", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 10))
+favorites_card.pack(fill="x", pady=6)
+tk.Button(favorites_card, text="Add to Favorites", bg="#FFD700", fg="black", command=on_add_to_favorites, font=("Segoe UI", 9, "bold")).grid(row=0, column=0, padx=4, pady=4, sticky="ew")
+tk.Button(favorites_card, text="Load Favorite", bg="#FFA500", fg="white", command=on_load_favorite, font=("Segoe UI", 9)).grid(row=0, column=1, padx=4, pady=4, sticky="ew")
+tk.Button(favorites_card, text="📊 Statistics", bg="#9C27B0", fg="white", command=on_show_statistics, font=("Segoe UI", 9)).grid(row=0, column=2, padx=4, pady=4, sticky="ew")
+favorites_card.grid_columnconfigure(0, weight=1)
+favorites_card.grid_columnconfigure(1, weight=1)
+favorites_card.grid_columnconfigure(2, weight=1)
+
 batch_card = tk.LabelFrame(left, text="Batch / Export / Import", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 10))
 batch_card.pack(fill="x", pady=6)
 tk.Button(batch_card, text="Batch Geocode CSV", bg=PRIMARY_BLUE, fg="white", command=batch_geocode_from_csv).grid(row=0, column=0, padx=4, pady=4)
@@ -1930,8 +2496,9 @@ maps_card = tk.LabelFrame(left, text="Maps", bg=CARD_BG, padx=8, pady=8, font=("
 maps_card.pack(fill="x", pady=6)
 tk.Button(maps_card, text="Open Map (Browser)", bg=DARK_BLUE, fg="white", command=lambda: open_map_in_browser(False)).grid(row=0, column=0, padx=4, pady=4)
 tk.Button(maps_card, text="Open Satellite (Browser)", bg=PRIMARY_BLUE, fg="white", command=lambda: open_map_in_browser(True)).grid(row=0, column=1, padx=4, pady=4)
-tk.Button(maps_card, text="Show Distances to World", bg=SUCCESS_GREEN, fg="white", command=open_map_with_distances).grid(row=0, column=2, padx=4, pady=4)
-tk.Button(maps_card, text="Embed Map (Optional)", bg=SECONDARY_BLUE, fg="white", command=embed_map_inside_app).grid(row=1, column=0, columnspan=3, padx=4, pady=4, sticky="ew")
+tk.Button(maps_card, text="Distances to 15 Cities", bg=SUCCESS_GREEN, fg="white", command=open_map_with_distances).grid(row=0, column=2, padx=4, pady=4)
+tk.Button(maps_card, text="🔍 Search & Add Cities", bg=WARNING_ORANGE, fg="white", command=open_searchable_distance_map, font=("Segoe UI", 9, "bold")).grid(row=1, column=0, columnspan=3, padx=4, pady=4, sticky="ew")
+tk.Button(maps_card, text="Embed Map (Optional)", bg=SECONDARY_BLUE, fg="white", command=embed_map_inside_app).grid(row=2, column=0, columnspan=3, padx=4, pady=4, sticky="ew")
 
 # GIS Features (Gjeoreferencimi & Spatial Analysis)
 gis_card = tk.LabelFrame(left, text="GIS / Gjeoreferencimi", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 10))
@@ -1976,7 +2543,7 @@ history_listbox.config(yscrollcommand=hist_scroll.set)
 
 # Right: results
 right = tk.Frame(main_frame, bg=BG_COLOR)
-right.pack(side="left", fill="both", expand=True)
+right.grid(row=0, column=1, sticky="nsew", padx=(15, 0))
 
 # Result variables
 result_vars = {
@@ -2061,5 +2628,9 @@ root.after(50, finalize_scrolling)
 root.after(200, finalize_scrolling)
 root.after(500, finalize_scrolling)
 root.after(1000, finalize_scrolling)  # Final check
+
+# Initialize SQLite database (automatic, no setup needed!)
+init_sqlite_db()
+load_favorites()
 
 root.mainloop()
