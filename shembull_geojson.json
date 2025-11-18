@@ -1,0 +1,39 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [21.1655, 42.6629]
+      },
+      "properties": {
+        "name": "Prishtina",
+        "description": "Kryeqyteti i Kosovës"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [20.7397, 42.2139]
+      },
+      "properties": {
+        "name": "Prizren",
+        "description": "Qyteti historik"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [20.2883, 42.6592]
+      },
+      "properties": {
+        "name": "Peja",
+        "description": "Qytet në Kosovë"
+      }
+    }
+  ]
+}
+

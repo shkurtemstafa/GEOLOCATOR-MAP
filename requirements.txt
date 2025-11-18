@@ -1,0 +1,20 @@
+# Core dependencies (required)
+geopy>=2.4.0
+requests>=2.32.0
+folium>=0.20.0
+pandas>=2.0.0
+
+# Optional: For embedded map display
+tkhtmlview>=0.1.0
+
+# Optional: GIS features (Gjeoreferencimi, spatial analysis)
+geopandas>=0.14.0
+shapely>=2.0.0
+pyproj>=3.6.0
+
+# Optional: GNSS/GPS support (GPX files)
+gpxpy>=1.5.0
+
+# Optional: PostGIS / Spatial Database support
+psycopg2-binary>=2.9.0
+
