@@ -96,6 +96,97 @@ stored_points = []
 # Favorite locations
 favorite_locations = []
 
+# Theme settings
+current_theme = "light"  # or "dark"
+
+# Autocomplete class
+class AutocompleteEntry(tk.Entry):
+    """Entry widget with autocomplete dropdown"""
+    def __init__(self, parent, autocomplete_function=None, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.autocomplete_function = autocomplete_function
+        self.var = self["textvariable"]
+        if self.var == '':
+            self.var = self["textvariable"] = tk.StringVar()
+        
+        self.var.trace('w', self.changed)
+        self.bind("<Right>", self.selection)
+        self.bind("<Up>", self.move_up)
+        self.bind("<Down>", self.move_down)
+        self.bind("<Return>", self.selection)
+        
+        self.lb_up = False
+        self.lb = None
+        self.typing_timer = None  # Add delay timer
+    
+    def changed(self, name, index, mode):
+        # Cancel previous timer
+        if self.typing_timer:
+            self.after_cancel(self.typing_timer)
+        
+        if self.var.get() == '':
+            if self.lb_up:
+                self.lb.destroy()
+                self.lb_up = False
+        else:
+            # Wait 500ms after user stops typing before showing suggestions
+            self.typing_timer = self.after(500, self.show_suggestions)
+    
+    def show_suggestions(self):
+        """Show suggestions after delay"""
+        words = self.comparison()
+        if words:
+            if not self.lb_up:
+                self.lb = tk.Listbox(self.master, height=5, font=("Segoe UI", 9))
+                self.lb.bind("<Double-Button-1>", self.selection)
+                self.lb.bind("<Right>", self.selection)
+                self.lb.place(x=self.winfo_x(), y=self.winfo_y() + self.winfo_height())
+                self.lb_up = True
+            
+            self.lb.delete(0, tk.END)
+            for w in words:
+                self.lb.insert(tk.END, w)
+        else:
+            if self.lb_up:
+                self.lb.destroy()
+                self.lb_up = False
+    
+    def selection(self, event):
+        if self.lb_up:
+            self.var.set(self.lb.get(tk.ACTIVE))
+            self.lb.destroy()
+            self.lb_up = False
+            self.icursor(tk.END)
+    
+    def move_up(self, event):
+        if self.lb_up:
+            if self.lb.curselection() == ():
+                index = '0'
+            else:
+                index = self.lb.curselection()[0]
+            if index != '0':
+                self.lb.selection_clear(first=index)
+                index = str(int(index) - 1)
+                self.lb.selection_set(first=index)
+                self.lb.activate(index)
+    
+    def move_down(self, event):
+        if self.lb_up:
+            if self.lb.curselection() == ():
+                index = '-1'
+            else:
+                index = self.lb.curselection()[0]
+            if index != tk.END:
+                self.lb.selection_clear(first=index)
+                index = str(int(index) + 1)
+                self.lb.selection_set(first=index)
+                self.lb.activate(index)
+    
+    def comparison(self):
+        if self.autocomplete_function:
+            return self.autocomplete_function(self.var.get())
+        return []
+
 # -------------------------
 # Helper utilities
 # -------------------------
@@ -152,6 +243,65 @@ def get_timezone_info(lat, lon):
     except:
         pass
     return None
+
+def get_weather_info(lat, lon):
+    """Get weather information using free API (Open-Meteo)"""
+    try:
+        # Open-Meteo is free, no API key needed!
+        url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true&temperature_unit=celsius"
+        resp = requests.get(url, timeout=5)
+        if resp.status_code == 200:
+            data = resp.json()
+            weather = data.get('current_weather', {})
+            temp = weather.get('temperature')
+            windspeed = weather.get('windspeed')
+            
+            # Weather codes
+            weather_codes = {
+                0: "☀️ Clear sky", 1: "🌤️ Mainly clear", 2: "⛅ Partly cloudy", 3: "☁️ Overcast",
+                45: "🌫️ Foggy", 48: "🌫️ Rime fog", 51: "🌦️ Light drizzle", 53: "🌦️ Drizzle",
+                55: "🌧️ Heavy drizzle", 61: "🌧️ Light rain", 63: "🌧️ Rain", 65: "🌧️ Heavy rain",
+                71: "🌨️ Light snow", 73: "❄️ Snow", 75: "❄️ Heavy snow", 77: "🌨️ Snow grains",
+                80: "🌦️ Light showers", 81: "🌧️ Showers", 82: "🌧️ Heavy showers",
+                85: "🌨️ Light snow showers", 86: "❄️ Snow showers", 95: "⛈️ Thunderstorm",
+                96: "⛈️ Thunderstorm with hail", 99: "⛈️ Heavy thunderstorm"
+            }
+            
+            code = weather.get('weathercode', 0)
+            condition = weather_codes.get(code, "Unknown")
+            
+            return {
+                'temperature': f"{temp}°C" if temp is not None else "N/A",
+                'condition': condition,
+                'windspeed': f"{windspeed} km/h" if windspeed is not None else "N/A"
+            }
+    except:
+        pass
+    return None
+
+def get_address_suggestions(query):
+    """Get address suggestions from Nominatim - with caching and delay"""
+    if not query or len(query) < 3:  # Require 3 characters minimum
+        return []
+    
+    # Simple cache to avoid repeated API calls
+    if not hasattr(get_address_suggestions, 'cache'):
+        get_address_suggestions.cache = {}
+    
+    # Check cache first
+    if query in get_address_suggestions.cache:
+        return get_address_suggestions.cache[query]
+    
+    try:
+        # Use Nominatim search with limit
+        results = geolocator.geocode(query, exactly_one=False, limit=5, timeout=3, addressdetails=True)
+        if results:
+            suggestions = [loc.address for loc in results]
+            get_address_suggestions.cache[query] = suggestions
+            return suggestions
+        return []
+    except:
+        return []
 
 def use_google_geocode_address(address):
     """Optional: Google Geocoding (requires API key). Returns dict similar to geopy Location."""
@@ -832,29 +982,41 @@ def on_find_coordinates():
             messagebox.showinfo("Not found", "Address not found.")
             return
         data = extract_address_fields(location)
-        elevation = get_elevation(data["latitude"], data["longitude"])
-        tz_info = get_timezone_info(data["latitude"], data["longitude"])
         
-        timezone_str = ""
-        if tz_info:
-            timezone_str = f"{tz_info['timezone']} (UTC{tz_info['utc_offset']:+.1f}) - {tz_info['current_time']}"
-        
+        # Show basic results immediately
         out = {
             "Latitude": data["latitude"],
             "Longitude": data["longitude"],
-            "Altitude": f"{elevation} m" if elevation is not None else "N/A",
+            "Altitude": "Loading...",
             "Display Address": data["display_name"],
             "Country": data["country"] or "",
             "Region": data["state"] or "",
             "City": data["city"] or "",
             "Postal Code": data["postcode"] or "",
-            "Timezone": timezone_str,
+            "Timezone": "Loading...",
+            "Weather": "Loading...",
             "ISP": "",
-            "AS": "",
             "Bounding Box": ", ".join(data["boundingbox"]) if data["boundingbox"] else ""
         }
         fill_result_panel(out)
         add_to_history(f"Address -> {address}")
+        root.update()  # Update UI immediately
+        
+        # Load extra info in background (non-blocking)
+        elevation = get_elevation(data["latitude"], data["longitude"])
+        result_vars["Altitude"].set(f"{elevation} m" if elevation is not None else "N/A")
+        
+        tz_info = get_timezone_info(data["latitude"], data["longitude"])
+        timezone_str = ""
+        if tz_info:
+            timezone_str = f"{tz_info['timezone']} (UTC{tz_info['utc_offset']:+.1f}) - {tz_info['current_time']}"
+        result_vars["Timezone"].set(timezone_str)
+        
+        weather_info = get_weather_info(data["latitude"], data["longitude"])
+        weather_str = ""
+        if weather_info:
+            weather_str = f"{weather_info['condition']} {weather_info['temperature']}, Wind: {weather_info['windspeed']}"
+        result_vars["Weather"].set(weather_str)
         
         # Save to database if connected
         save_to_database(data["latitude"], data["longitude"], data["display_name"], "address_search")
@@ -881,29 +1043,37 @@ def on_find_address():
             messagebox.showinfo("Not found", "No address found at these coordinates.")
             return
         data = extract_address_fields(location)
-        elevation = get_elevation(lat, lon)
-        tz_info = get_timezone_info(lat, lon)
         
-        timezone_str = ""
-        if tz_info:
-            timezone_str = f"{tz_info['timezone']} (UTC{tz_info['utc_offset']:+.1f}) - {tz_info['current_time']}"
-        
+        # Show basic results immediately
         out = {
             "Latitude": data["latitude"],
             "Longitude": data["longitude"],
-            "Altitude": f"{elevation} m" if elevation is not None else "N/A",
+            "Altitude": "Loading...",
             "Display Address": data["display_name"],
             "Country": data["country"] or "",
             "Region": data["state"] or "",
             "City": data["city"] or "",
             "Postal Code": data["postcode"] or "",
-            "Timezone": timezone_str,
+            "Timezone": "Loading...",
+            "Weather": "Loading...",
             "ISP": "",
-            "AS": "",
             "Bounding Box": ", ".join(data["boundingbox"]) if data["boundingbox"] else ""
         }
         fill_result_panel(out)
         add_to_history(f"Coords -> {lat},{lon}")
+        root.update()  # Update UI immediately
+        
+        # Load extra info in background
+        elevation = get_elevation(lat, lon)
+        result_vars["Altitude"].set(f"{elevation} m" if elevation is not None else "N/A")
+        
+        tz_info = get_timezone_info(lat, lon)
+        if tz_info:
+            result_vars["Timezone"].set(f"{tz_info['timezone']} (UTC{tz_info['utc_offset']:+.1f}) - {tz_info['current_time']}")
+        
+        weather_info = get_weather_info(lat, lon)
+        if weather_info:
+            result_vars["Weather"].set(f"{weather_info['condition']} {weather_info['temperature']}, Wind: {weather_info['windspeed']}")
         
         # Save to database if connected
         save_to_database(lat, lon, data["display_name"], "coords_search")
@@ -943,7 +1113,6 @@ def on_find_ip():
             "Postal Code": data.get("zip") or "",
             "Timezone": data.get("timezone") or "",
             "ISP": data.get("isp") or data.get("org") or "",
-            "AS": data.get("as") or "",
             "Bounding Box": ""
         }
         fill_result_panel(out)
@@ -1081,8 +1250,8 @@ def open_searchable_distance_map():
     search_frame = tk.LabelFrame(dialog, text="Search and Add Cities", bg=CARD_BG, padx=10, pady=10)
     search_frame.pack(fill="x", padx=20, pady=10)
     
-    tk.Label(search_frame, text="Enter city/country name:", bg=CARD_BG).pack(anchor="w")
-    search_entry = tk.Entry(search_frame, width=40, font=("Segoe UI", 10))
+    tk.Label(search_frame, text="Enter city/country name:", bg=CARD_BG, font=("Segoe UI", 10)).pack(anchor="w")
+    search_entry = AutocompleteEntry(search_frame, autocomplete_function=get_address_suggestions, width=40, font=("Segoe UI", 11))
     search_entry.pack(fill="x", pady=5)
     
     # List of added cities
@@ -1540,9 +1709,12 @@ def batch_geocode_from_csv():
             except Exception as e:
                 out_rows.append({"address": str(addr), "lat": "", "lon": "", "status": f"Gabim: {str(e)[:30]}"})
         
-        progress_label.config(text=f"Duke procesuar {idx}/{total}...")
-        progress_bar['value'] = idx
-        progress_window.update()
+        try:
+            progress_label.config(text=f"Duke procesuar {idx}/{total}...")
+            progress_bar['value'] = idx
+            progress_window.update()
+        except:
+            pass  # Window might be closed
     
     progress_window.destroy()
     
@@ -2161,6 +2333,51 @@ def load_favorite_quick(fav):
     lon_entry.insert(0, str(fav['lon']))
     on_find_address()
 
+def toggle_theme():
+    """Toggle between light and dark theme"""
+    global current_theme, BG_COLOR, CARD_BG, TEXT_COLOR, TEXT_SECONDARY
+    
+    if current_theme == "light":
+        # Switch to dark theme
+        current_theme = "dark"
+        BG_COLOR = "#1E1E1E"
+        CARD_BG = "#2D2D2D"
+        TEXT_COLOR = "#FFFFFF"
+        TEXT_SECONDARY = "#B0B0B0"
+    else:
+        # Switch to light theme
+        current_theme = "light"
+        BG_COLOR = "#F5F7FA"
+        CARD_BG = "#FFFFFF"
+        TEXT_COLOR = "#212121"
+        TEXT_SECONDARY = "#757575"
+    
+    # Update all widgets
+    root.configure(bg=BG_COLOR)
+    main_frame.configure(bg=BG_COLOR)
+    left_container.configure(bg=BG_COLOR)
+    scroll_frame.configure(bg=BG_COLOR)
+    left_canvas.configure(bg=BG_COLOR)
+    left_scrollable_frame.configure(bg=BG_COLOR)
+    right.configure(bg=BG_COLOR)
+    title_lbl.configure(bg=BG_COLOR, fg=TEXT_COLOR)
+    footer.configure(bg=BG_COLOR, fg=TEXT_SECONDARY)
+    
+    # Update all cards
+    for widget in left_scrollable_frame.winfo_children():
+        if isinstance(widget, tk.LabelFrame):
+            widget.configure(bg=CARD_BG)
+            for child in widget.winfo_children():
+                if isinstance(child, tk.Label):
+                    child.configure(bg=CARD_BG, fg=TEXT_COLOR)
+    
+    info_card.configure(bg=CARD_BG)
+    for child in info_card.winfo_children():
+        if isinstance(child, tk.Label):
+            child.configure(bg=CARD_BG, fg=TEXT_COLOR)
+    
+    messagebox.showinfo("Theme Changed", f"Switched to {current_theme.title()} theme!")
+
 def on_create_table():
     """Create the locations table in PostGIS."""
     if not POSTGIS_AVAILABLE:
@@ -2326,14 +2543,18 @@ The buffer will be exported as a GeoJSON polygon that you can:
 # -------------------------
 root = tk.Tk()
 root.title(APP_TITLE)
-root.geometry("1100x900")  # Increased size for new features
+root.geometry("1400x950")  # Bigger window
 root.configure(bg=BG_COLOR)
+
+# Larger default font
+default_font = ("Segoe UI", 10)
+root.option_add("*Font", default_font)
 
 history = []
 
 # Title
-title_lbl = tk.Label(root, text=APP_TITLE, font=("Segoe UI", 18, "bold"), bg=BG_COLOR, fg=TEXT_COLOR)
-title_lbl.pack(pady=(10,6))
+title_lbl = tk.Label(root, text=APP_TITLE, font=("Segoe UI", 20, "bold"), bg=BG_COLOR, fg=TEXT_COLOR)
+title_lbl.pack(pady=(12,8))
 
 main_frame = tk.Frame(root, bg=BG_COLOR)
 main_frame.pack(fill="both", expand=True, padx=10, pady=6)
@@ -2452,29 +2673,29 @@ def bind_mousewheel_to_children(parent):
 
 left = left_scrollable_frame  # Përdor këtë frame për të gjitha widgets
 
-addr_card = tk.LabelFrame(left, text="Address → Coordinates", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 10))
+addr_card = tk.LabelFrame(left, text="Address → Coordinates", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 11, "bold"))
 addr_card.pack(fill="x", pady=6)
-tk.Label(addr_card, text="Address:", bg=CARD_BG).grid(row=0, column=0, sticky="w")
-address_entry = tk.Entry(addr_card, width=35, font=("Segoe UI", 10))  # Reduced width to fit
+tk.Label(addr_card, text="Address:", bg=CARD_BG, font=("Segoe UI", 10)).grid(row=0, column=0, sticky="w")
+address_entry = AutocompleteEntry(addr_card, autocomplete_function=get_address_suggestions, width=40, font=("Segoe UI", 11))
 address_entry.grid(row=0, column=1, padx=6, pady=4)
-tk.Button(addr_card, text="Find Coordinates", bg=PRIMARY_BLUE, fg="white", command=on_find_coordinates).grid(row=0, column=2, padx=6)
+tk.Button(addr_card, text="Find Coordinates", bg=PRIMARY_BLUE, fg="white", command=on_find_coordinates, font=("Segoe UI", 10, "bold")).grid(row=0, column=2, padx=6)
 
-coord_card = tk.LabelFrame(left, text="Coordinates → Address", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 10))
+coord_card = tk.LabelFrame(left, text="Coordinates → Address", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 11, "bold"))
 coord_card.pack(fill="x", pady=6)
-tk.Label(coord_card, text="Latitude:", bg=CARD_BG).grid(row=0, column=0, sticky="w")
-lat_entry = tk.Entry(coord_card, width=22, font=("Segoe UI", 10))
+tk.Label(coord_card, text="Latitude:", bg=CARD_BG, font=("Segoe UI", 10)).grid(row=0, column=0, sticky="w")
+lat_entry = tk.Entry(coord_card, width=25, font=("Segoe UI", 11))
 lat_entry.grid(row=0, column=1, padx=6, pady=4)
-tk.Label(coord_card, text="Longitude:", bg=CARD_BG).grid(row=1, column=0, sticky="w")
-lon_entry = tk.Entry(coord_card, width=22, font=("Segoe UI", 10))
+tk.Label(coord_card, text="Longitude:", bg=CARD_BG, font=("Segoe UI", 10)).grid(row=1, column=0, sticky="w")
+lon_entry = tk.Entry(coord_card, width=25, font=("Segoe UI", 11))
 lon_entry.grid(row=1, column=1, padx=6, pady=4)
-tk.Button(coord_card, text="Find Address", bg=PRIMARY_BLUE, fg="white", command=on_find_address).grid(row=0, column=2, rowspan=2, padx=6)
+tk.Button(coord_card, text="Find Address", bg=PRIMARY_BLUE, fg="white", command=on_find_address, font=("Segoe UI", 10, "bold")).grid(row=0, column=2, rowspan=2, padx=6)
 
-ip_card = tk.LabelFrame(left, text="IP → Location", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 10))
+ip_card = tk.LabelFrame(left, text="IP → Location", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 11, "bold"))
 ip_card.pack(fill="x", pady=6)
-tk.Label(ip_card, text="IP Address:", bg=CARD_BG).grid(row=0, column=0, sticky="w")
-ip_entry = tk.Entry(ip_card, width=30, font=("Segoe UI", 10))
+tk.Label(ip_card, text="IP Address:", bg=CARD_BG, font=("Segoe UI", 10)).grid(row=0, column=0, sticky="w")
+ip_entry = tk.Entry(ip_card, width=35, font=("Segoe UI", 11))
 ip_entry.grid(row=0, column=1, padx=6, pady=4)
-tk.Button(ip_card, text="Locate IP", bg=PRIMARY_BLUE, fg="white", command=on_find_ip).grid(row=0, column=2, padx=6)
+tk.Button(ip_card, text="Locate IP", bg=PRIMARY_BLUE, fg="white", command=on_find_ip, font=("Segoe UI", 10, "bold")).grid(row=0, column=2, padx=6)
 
 # Favorites & Quick Access
 favorites_card = tk.LabelFrame(left, text="⭐ Favorites & Quick Access", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 10))
@@ -2482,6 +2703,7 @@ favorites_card.pack(fill="x", pady=6)
 tk.Button(favorites_card, text="Add to Favorites", bg="#FFD700", fg="black", command=on_add_to_favorites, font=("Segoe UI", 9, "bold")).grid(row=0, column=0, padx=4, pady=4, sticky="ew")
 tk.Button(favorites_card, text="Load Favorite", bg="#FFA500", fg="white", command=on_load_favorite, font=("Segoe UI", 9)).grid(row=0, column=1, padx=4, pady=4, sticky="ew")
 tk.Button(favorites_card, text="📊 Statistics", bg="#9C27B0", fg="white", command=on_show_statistics, font=("Segoe UI", 9)).grid(row=0, column=2, padx=4, pady=4, sticky="ew")
+tk.Button(favorites_card, text="🎨 Theme", bg="#607D8B", fg="white", command=toggle_theme, font=("Segoe UI", 9)).grid(row=1, column=0, columnspan=3, padx=4, pady=4, sticky="ew")
 favorites_card.grid_columnconfigure(0, weight=1)
 favorites_card.grid_columnconfigure(1, weight=1)
 favorites_card.grid_columnconfigure(2, weight=1)
@@ -2492,13 +2714,15 @@ tk.Button(batch_card, text="Batch Geocode CSV", bg=PRIMARY_BLUE, fg="white", com
 tk.Button(batch_card, text="Export Current → CSV", bg=DARK_BLUE, fg="white", command=export_current_to_csv).grid(row=0, column=1, padx=4, pady=4)
 tk.Button(batch_card, text="Import Random Address", bg=SECONDARY_BLUE, fg="white", command=import_single_address_from_csv).grid(row=0, column=2, padx=4, pady=4)
 
-maps_card = tk.LabelFrame(left, text="Maps", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 10))
+maps_card = tk.LabelFrame(left, text="Maps", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 11, "bold"))
 maps_card.pack(fill="x", pady=6)
-tk.Button(maps_card, text="Open Map (Browser)", bg=DARK_BLUE, fg="white", command=lambda: open_map_in_browser(False)).grid(row=0, column=0, padx=4, pady=4)
-tk.Button(maps_card, text="Open Satellite (Browser)", bg=PRIMARY_BLUE, fg="white", command=lambda: open_map_in_browser(True)).grid(row=0, column=1, padx=4, pady=4)
-tk.Button(maps_card, text="Distances to 15 Cities", bg=SUCCESS_GREEN, fg="white", command=open_map_with_distances).grid(row=0, column=2, padx=4, pady=4)
-tk.Button(maps_card, text="🔍 Search & Add Cities", bg=WARNING_ORANGE, fg="white", command=open_searchable_distance_map, font=("Segoe UI", 9, "bold")).grid(row=1, column=0, columnspan=3, padx=4, pady=4, sticky="ew")
-tk.Button(maps_card, text="Embed Map (Optional)", bg=SECONDARY_BLUE, fg="white", command=embed_map_inside_app).grid(row=2, column=0, columnspan=3, padx=4, pady=4, sticky="ew")
+tk.Button(maps_card, text="Open Map (Browser)", bg=DARK_BLUE, fg="white", command=lambda: open_map_in_browser(False), font=("Segoe UI", 10)).grid(row=0, column=0, padx=4, pady=4, sticky="ew")
+tk.Button(maps_card, text="Open Satellite (Browser)", bg=PRIMARY_BLUE, fg="white", command=lambda: open_map_in_browser(True), font=("Segoe UI", 10)).grid(row=0, column=1, padx=4, pady=4, sticky="ew")
+tk.Button(maps_card, text="Distances to 15 Cities", bg=SUCCESS_GREEN, fg="white", command=open_map_with_distances, font=("Segoe UI", 10)).grid(row=0, column=2, padx=4, pady=4, sticky="ew")
+tk.Button(maps_card, text="🔍 Search & Add Cities", bg=WARNING_ORANGE, fg="white", command=open_searchable_distance_map, font=("Segoe UI", 10, "bold")).grid(row=1, column=0, columnspan=3, padx=4, pady=4, sticky="ew")
+maps_card.grid_columnconfigure(0, weight=1)
+maps_card.grid_columnconfigure(1, weight=1)
+maps_card.grid_columnconfigure(2, weight=1)
 
 # GIS Features (Gjeoreferencimi & Spatial Analysis)
 gis_card = tk.LabelFrame(left, text="GIS / Gjeoreferencimi", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 10))
@@ -2517,20 +2741,14 @@ gnss_card.grid_columnconfigure(0, weight=1)
 gnss_card.grid_columnconfigure(1, weight=1)
 
 # GeoJSON Import/Export
-geojson_card = tk.LabelFrame(left, text="GeoJSON", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 10))
+geojson_card = tk.LabelFrame(left, text="GeoJSON", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 11, "bold"))
 geojson_card.pack(fill="x", pady=6)
-tk.Button(geojson_card, text="Import GeoJSON", bg="#9C27B0", fg="white", command=on_import_geojson).grid(row=0, column=0, padx=4, pady=3, sticky="ew")
-tk.Button(geojson_card, text="Export GeoJSON", bg="#9C27B0", fg="white", command=on_export_geojson).grid(row=0, column=1, padx=4, pady=3, sticky="ew")
+tk.Button(geojson_card, text="Import GeoJSON", bg="#9C27B0", fg="white", command=on_import_geojson, font=("Segoe UI", 10)).grid(row=0, column=0, padx=4, pady=3, sticky="ew")
+tk.Button(geojson_card, text="Export GeoJSON", bg="#9C27B0", fg="white", command=on_export_geojson, font=("Segoe UI", 10)).grid(row=0, column=1, padx=4, pady=3, sticky="ew")
 geojson_card.grid_columnconfigure(0, weight=1)
 geojson_card.grid_columnconfigure(1, weight=1)
 
-# PostGIS / Spatial Database
-postgis_card = tk.LabelFrame(left, text="PostGIS / Databazat Gjeohapsinore", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 10))
-postgis_card.pack(fill="x", pady=6)
-tk.Button(postgis_card, text="Connect PostGIS", bg=ERROR_RED, fg="white", command=on_postgis_connect).grid(row=0, column=0, padx=4, pady=3)
-tk.Button(postgis_card, text="Create Table", bg=WARNING_ORANGE, fg="white", command=lambda: on_create_table()).grid(row=0, column=1, padx=4, pady=3)
-tk.Button(postgis_card, text="Insert Point", bg=ERROR_RED, fg="white", command=on_postgis_insert).grid(row=0, column=2, padx=4, pady=3)
-tk.Button(postgis_card, text="Spatial Query", bg=ERROR_RED, fg="white", command=on_postgis_query).grid(row=1, column=0, columnspan=3, padx=4, pady=3, sticky="ew")
+# PostGIS section removed - SQLite is used automatically instead
 
 # History
 hist_card = tk.LabelFrame(left, text="Search History", bg=CARD_BG, padx=6, pady=6, font=("Segoe UI", 10))
@@ -2555,13 +2773,13 @@ result_vars = {
     "City": tk.StringVar(),
     "Postal Code": tk.StringVar(),
     "Timezone": tk.StringVar(),
+    "Weather": tk.StringVar(),
     "ISP": tk.StringVar(),
-    "AS": tk.StringVar(),
     "Bounding Box": tk.StringVar(),
     "Altitude": tk.StringVar(),
 }
 
-info_card = tk.LabelFrame(right, text="Location Info (Result)", bg=CARD_BG, padx=12, pady=10, font=("Segoe UI", 11))
+info_card = tk.LabelFrame(right, text="Location Info (Result)", bg=CARD_BG, padx=12, pady=10, font=("Segoe UI", 12, "bold"))
 info_card.pack(fill="both", expand=True, pady=6)
 
 row = 0
@@ -2575,14 +2793,14 @@ for label_text, var_key in [
     ("City:", "City"),
     ("Postal Code:", "Postal Code"),
     ("Timezone:", "Timezone"),
+    ("Weather:", "Weather"),
     ("ISP / Org:", "ISP"),
-    ("AS:", "AS"),
     ("Bounding Box:", "Bounding Box"),
 ]:
-    lbl = tk.Label(info_card, text=label_text, anchor="w", bg=CARD_BG, width=14)
-    lbl.grid(row=row, column=0, sticky="w", padx=(2,6), pady=4)
-    ent = tk.Entry(info_card, textvariable=result_vars[var_key], width=60, font=("Segoe UI", 10))
-    ent.grid(row=row, column=1, sticky="w", padx=(2,8), pady=4)
+    lbl = tk.Label(info_card, text=label_text, anchor="w", bg=CARD_BG, width=14, font=("Segoe UI", 10, "bold"))
+    lbl.grid(row=row, column=0, sticky="w", padx=(2,6), pady=5)
+    ent = tk.Entry(info_card, textvariable=result_vars[var_key], width=50, font=("Segoe UI", 11))
+    ent.grid(row=row, column=1, sticky="w", padx=(2,8), pady=5)
     row += 1
 
 controls = tk.Frame(right, bg=BG_COLOR)
