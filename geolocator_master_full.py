@@ -545,6 +545,22 @@ def fill_result_panel(data_dict):
     for key, val in data_dict.items():
         if key in result_vars:
             result_vars[key].set("" if val is None else str(val))
+    
+    # Create a formatted exact location string
+    location_parts = []
+    if data_dict.get("City"):
+        location_parts.append(data_dict["City"])
+    if data_dict.get("Region") and data_dict.get("Region") != data_dict.get("City"):
+        location_parts.append(data_dict["Region"])
+    if data_dict.get("Country"):
+        location_parts.append(data_dict["Country"])
+    
+    if location_parts:
+        exact_location = " → ".join(location_parts)
+        # Update Display Address to show both full address and formatted location
+        current_address = data_dict.get("Display Address", "")
+        if current_address and exact_location not in current_address:
+            result_vars["Display Address"].set(f"{current_address}\n📍 {exact_location}")
 
 # -------------------------
 # Address -> Coordinates
@@ -673,20 +689,40 @@ def open_map_in_browser(satellite=False):
         return
 
     # Krijon hartën me zoom më të saktë
-    m = folium.Map(location=[latf, lonf], zoom_start=18, tiles=None)  # Zoom më i lartë për saktësi
-    
-    # Shto layer-e të ndryshme
-    folium.TileLayer(
-        tiles='OpenStreetMap',
-        name='Harta Standard',
-        attr='OpenStreetMap contributors'
-    ).add_to(m)
-    
+    # Start with satellite if requested, otherwise standard map
     if satellite:
+        m = folium.Map(location=[latf, lonf], zoom_start=18, tiles=None)
+        # Add satellite layer first (will be default)
         folium.TileLayer(
             tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-            attr='Esri',
-            name='Imazh Satelitor',
+            attr='Esri World Imagery',
+            name='🛰️ Satellite View (Esri)',
+            overlay=False,
+            control=True
+        ).add_to(m)
+        # Add standard map as alternative
+        folium.TileLayer(
+            tiles='OpenStreetMap',
+            name='🗺️ Standard Map (OSM)',
+            attr='OpenStreetMap contributors',
+            overlay=False,
+            control=True
+        ).add_to(m)
+    else:
+        m = folium.Map(location=[latf, lonf], zoom_start=18, tiles=None)
+        # Add standard map first (will be default)
+        folium.TileLayer(
+            tiles='OpenStreetMap',
+            name='🗺️ Standard Map (OSM)',
+            attr='OpenStreetMap contributors',
+            overlay=False,
+            control=True
+        ).add_to(m)
+        # Add satellite as alternative
+        folium.TileLayer(
+            tiles='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            attr='Esri World Imagery',
+            name='🛰️ Satellite View (Esri)',
             overlay=False,
             control=True
         ).add_to(m)
@@ -726,13 +762,37 @@ def open_map_in_browser(satellite=False):
         icon=folium.Icon(color='blue', icon='info-sign', prefix='glyphicon')
     ).add_to(m)
     
-    # Shto kontrollin e layer-ave
-    folium.LayerControl().add_to(m)
+    # Shto kontrollin e layer-ave (top right corner)
+    folium.LayerControl(position='topright', collapsed=False).add_to(m)
+    
+    # Add title/info box
+    map_type = "Satellite View (Esri World Imagery)" if satellite else "Standard Map (OpenStreetMap)"
+    title_html = f'''
+    <div style="position: fixed; 
+                top: 10px; 
+                left: 50px; 
+                width: auto;
+                height: auto;
+                background-color: white;
+                border: 2px solid #1E88E5;
+                border-radius: 5px;
+                z-index: 9999;
+                padding: 10px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                font-family: Arial, sans-serif;">
+        <h4 style="margin: 0 0 5px 0; color: #1E88E5;">📍 GeoLocator Map</h4>
+        <p style="margin: 0; font-size: 12px;"><strong>Default View:</strong> {map_type}</p>
+        <p style="margin: 5px 0 0 0; font-size: 11px; color: #666;">
+            Use layer control (top-right) to switch between map types
+        </p>
+    </div>
+    '''
+    m.get_root().html.add_child(folium.Element(title_html))
     
     # Shto një mini-map në qoshe (nëse është e disponueshme)
     try:
         from folium.plugins import MiniMap
-        minimap = MiniMap(toggle_display=True)
+        minimap = MiniMap(toggle_display=True, position='bottomleft')
         m.add_child(minimap)
     except:
         pass  # MiniMap nuk është kritike
@@ -740,13 +800,30 @@ def open_map_in_browser(satellite=False):
     # Shto fullscreen button (nëse është e disponueshme)
     try:
         from folium.plugins import Fullscreen
-        Fullscreen().add_to(m)
+        Fullscreen(position='topleft').add_to(m)
     except:
         pass  # Fullscreen nuk është kritike
+    
+    # Shto scale bar
+    try:
+        from folium.plugins import MeasureControl
+        m.add_child(MeasureControl(primary_length_unit='meters', secondary_length_unit='kilometers'))
+    except:
+        pass
     
     # Ruaj dhe hap
     outpath = os.path.join(os.getcwd(), "geolocator_map.html")
     m.save(outpath)
+    
+    # Show info message
+    view_type = "🛰️ Satellite" if satellite else "🗺️ Standard Map"
+    messagebox.showinfo("Map Opened", 
+        f"{view_type} opened in browser!\n\n"
+        f"📍 Location: {result_vars['Display Address'].get() or 'Unknown'}\n"
+        f"📏 Coordinates: {latf:.6f}, {lonf:.6f}\n"
+        f"🗺️ Source: {'Esri World Imagery' if satellite else 'OpenStreetMap'}\n\n"
+        f"💡 Tip: Use the layer control (top-right) to switch between map types")
+    
     webbrowser.open("file://" + os.path.abspath(outpath))
 
 def embed_map_inside_app():
@@ -905,7 +982,7 @@ def on_transform_coordinates():
         messagebox.showerror("Error", f"Transformation failed: {e}")
 
 def on_calculate_distance():
-    """Calculate distance between two points."""
+    """Calculate distance between two points - with option to enter address or coordinates."""
     lat1 = result_vars["Latitude"].get()
     lon1 = result_vars["Longitude"].get()
     if not lat1 or not lon1:
@@ -914,29 +991,92 @@ def on_calculate_distance():
     
     # Open dialog for second point
     dialog = tk.Toplevel(root)
-    dialog.title("Calculate Distance")
-    dialog.geometry("300x150")
-    tk.Label(dialog, text="Point 2 Coordinates:").pack(pady=5)
-    tk.Label(dialog, text="Latitude:").pack()
-    lat2_entry = tk.Entry(dialog, width=20)
-    lat2_entry.pack()
-    tk.Label(dialog, text="Longitude:").pack()
-    lon2_entry = tk.Entry(dialog, width=20)
-    lon2_entry.pack()
+    dialog.title("Calculate Distance / Llogarit Distancën")
+    dialog.geometry("400x280")
+    
+    tk.Label(dialog, text="Point 1 (Current):", font=("Segoe UI", 10, "bold")).pack(pady=5)
+    tk.Label(dialog, text=f"Lat: {lat1}, Lon: {lon1}", font=("Segoe UI", 9)).pack()
+    tk.Label(dialog, text=result_vars["Display Address"].get() or "Unknown location", 
+             font=("Segoe UI", 8), wraplength=350).pack(pady=(0,10))
+    
+    tk.Label(dialog, text="Point 2 - Choose input method:", font=("Segoe UI", 10, "bold")).pack(pady=5)
+    
+    # Radio buttons for input method
+    input_method = tk.StringVar(value="address")
+    tk.Radiobutton(dialog, text="Enter Address/City (e.g., 'Berlin, Germany')", 
+                   variable=input_method, value="address").pack(anchor="w", padx=20)
+    tk.Radiobutton(dialog, text="Enter Coordinates (Lat, Lon)", 
+                   variable=input_method, value="coords").pack(anchor="w", padx=20)
+    
+    # Address entry
+    address_frame = tk.Frame(dialog)
+    address_frame.pack(pady=5, fill="x", padx=20)
+    tk.Label(address_frame, text="Address/City:").pack(anchor="w")
+    address_entry = tk.Entry(address_frame, width=40)
+    address_entry.pack(fill="x")
+    
+    # Coordinates entry
+    coords_frame = tk.Frame(dialog)
+    coords_frame.pack(pady=5, fill="x", padx=20)
+    tk.Label(coords_frame, text="Latitude:").pack(anchor="w")
+    lat2_entry = tk.Entry(coords_frame, width=20)
+    lat2_entry.pack(fill="x")
+    tk.Label(coords_frame, text="Longitude:").pack(anchor="w")
+    lon2_entry = tk.Entry(coords_frame, width=20)
+    lon2_entry.pack(fill="x")
     
     def calc():
         try:
-            lat2 = float(lat2_entry.get())
-            lon2 = float(lon2_entry.get())
+            lat2, lon2 = None, None
+            point2_name = ""
+            
+            if input_method.get() == "address":
+                # Geocode the address
+                addr = address_entry.get().strip()
+                if not addr:
+                    messagebox.showerror("Error", "Please enter an address or city.")
+                    return
+                
+                location = geolocator.geocode(addr, addressdetails=True, exactly_one=True, timeout=10)
+                if not location:
+                    messagebox.showerror("Not found", f"Address not found: {addr}")
+                    return
+                
+                lat2 = location.latitude
+                lon2 = location.longitude
+                point2_name = getattr(location, "address", addr)
+            else:
+                # Use coordinates
+                lat2 = float(lat2_entry.get())
+                lon2 = float(lon2_entry.get())
+                point2_name = f"Lat: {lat2}, Lon: {lon2}"
+            
+            # Calculate distance and bearing
             dist = calculate_distance(float(lat1), float(lon1), lat2, lon2)
             bearing = calculate_bearing(float(lat1), float(lon1), lat2, lon2)
-            msg = f"Distance: {dist:.2f} meters ({dist/1000:.2f} km)\nBearing: {bearing:.1f}°"
-            messagebox.showinfo("Distance Calculation", msg)
+            
+            # Format result message
+            msg = f"📍 Point 1: {result_vars['Display Address'].get() or 'Current location'}\n"
+            msg += f"📍 Point 2: {point2_name}\n\n"
+            msg += f"📏 Distance: {dist:.2f} meters\n"
+            msg += f"   = {dist/1000:.3f} km\n"
+            msg += f"   = {dist/1609.34:.3f} miles\n\n"
+            msg += f"🧭 Bearing: {bearing:.1f}°\n"
+            
+            # Add cardinal direction
+            directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+            idx = int((bearing + 22.5) / 45) % 8
+            msg += f"   Direction: {directions[idx]}"
+            
+            messagebox.showinfo("Distance Calculation / Llogaritja e Distancës", msg)
             dialog.destroy()
+        except ValueError as e:
+            messagebox.showerror("Error", "Invalid coordinates. Please enter valid numbers.")
         except Exception as e:
             messagebox.showerror("Error", f"Calculation failed: {e}")
     
-    tk.Button(dialog, text="Calculate", command=calc).pack(pady=10)
+    tk.Button(dialog, text="Calculate / Llogarit", bg=PRIMARY_BLUE, fg="white", 
+              command=calc, font=("Segoe UI", 10)).pack(pady=15)
 
 def on_store_point():
     """Store current point for GIS operations."""
@@ -1050,41 +1190,161 @@ def on_import_gpx():
         messagebox.showerror("Gabim", f"Gabim gjatë importimit:\n{str(e)}")
 
 def on_postgis_connect():
-    """Configure PostGIS connection."""
+    """Configure PostGIS connection with better feedback."""
     dialog = tk.Toplevel(root)
-    dialog.title("PostGIS Connection")
-    dialog.geometry("350x250")
+    dialog.title("PostGIS Connection / Lidhja me PostGIS")
+    dialog.geometry("450x400")
     
-    tk.Label(dialog, text="PostGIS Database Connection", font=("Segoe UI", 10, "bold")).pack(pady=5)
+    tk.Label(dialog, text="PostGIS Database Connection", font=("Segoe UI", 12, "bold")).pack(pady=10)
+    
+    # Info text
+    info_text = """
+PostGIS is a spatial database extension for PostgreSQL.
+PostGIS është një shtesë hapësinore për PostgreSQL.
+
+Required: PostgreSQL + PostGIS extension installed
+Kërkohet: PostgreSQL + shtesa PostGIS e instaluar
+    """
+    tk.Label(dialog, text=info_text, font=("Segoe UI", 8), fg="#666", 
+             justify="left", wraplength=400).pack(pady=5)
+    
+    # Current status
+    status_frame = tk.Frame(dialog, bg="#F0F0F0", padx=10, pady=5)
+    status_frame.pack(fill="x", padx=10, pady=5)
+    
+    current_status = "Not connected / Nuk është i lidhur"
+    if POSTGIS_HOST and POSTGIS_DB:
+        current_status = f"Current: {POSTGIS_USER}@{POSTGIS_HOST}/{POSTGIS_DB}"
+        if connect_postgis():
+            current_status += " ✅ Connected"
+        else:
+            current_status += " ❌ Not connected"
+    
+    tk.Label(status_frame, text=f"Status: {current_status}", font=("Segoe UI", 8), 
+             bg="#F0F0F0").pack()
+    
+    # Input fields
+    input_frame = tk.Frame(dialog)
+    input_frame.pack(pady=10, padx=20, fill="both")
     
     fields = [
-        ("Host:", "host"),
-        ("Port:", "port"),
-        ("Database:", "db"),
-        ("User:", "user"),
-        ("Password:", "password")
+        ("Host:", "host", "localhost or IP address"),
+        ("Port:", "port", "5432 (default)"),
+        ("Database:", "db", "database name"),
+        ("User:", "user", "postgres"),
+        ("Password:", "password", "")
     ]
     entries = {}
-    for i, (label, key) in enumerate(fields):
-        tk.Label(dialog, text=label).pack()
-        entry = tk.Entry(dialog, width=30, show="*" if key == "password" else "")
-        entry.pack(pady=2)
+    
+    for i, (label, key, placeholder) in enumerate(fields):
+        tk.Label(input_frame, text=label, font=("Segoe UI", 9)).grid(row=i, column=0, sticky="w", pady=3)
+        entry = tk.Entry(input_frame, width=30, show="*" if key == "password" else "")
+        entry.grid(row=i, column=1, pady=3, padx=5)
+        
+        # Set current values if available
+        if key == "host" and POSTGIS_HOST:
+            entry.insert(0, POSTGIS_HOST)
+        elif key == "port":
+            entry.insert(0, POSTGIS_PORT or "5432")
+        elif key == "db" and POSTGIS_DB:
+            entry.insert(0, POSTGIS_DB)
+        elif key == "user" and POSTGIS_USER:
+            entry.insert(0, POSTGIS_USER)
+        elif key == "password" and POSTGIS_PASSWORD:
+            entry.insert(0, POSTGIS_PASSWORD)
+        
         entries[key] = entry
+        
+        # Placeholder hint
+        if placeholder:
+            tk.Label(input_frame, text=f"({placeholder})", font=("Segoe UI", 7), 
+                    fg="#999").grid(row=i, column=2, sticky="w", padx=5)
+    
+    def test_connection():
+        """Test connection without saving."""
+        global POSTGIS_HOST, POSTGIS_PORT, POSTGIS_DB, POSTGIS_USER, POSTGIS_PASSWORD
+        
+        # Temporarily set values
+        old_values = (POSTGIS_HOST, POSTGIS_PORT, POSTGIS_DB, POSTGIS_USER, POSTGIS_PASSWORD)
+        
+        POSTGIS_HOST = entries["host"].get().strip()
+        POSTGIS_PORT = entries["port"].get().strip() or "5432"
+        POSTGIS_DB = entries["db"].get().strip()
+        POSTGIS_USER = entries["user"].get().strip()
+        POSTGIS_PASSWORD = entries["password"].get()
+        
+        if not all([POSTGIS_HOST, POSTGIS_DB, POSTGIS_USER]):
+            messagebox.showerror("Error", "Please fill in Host, Database, and User fields.")
+            POSTGIS_HOST, POSTGIS_PORT, POSTGIS_DB, POSTGIS_USER, POSTGIS_PASSWORD = old_values
+            return
+        
+        conn = connect_postgis()
+        if conn:
+            try:
+                cur = conn.cursor()
+                # Test PostGIS extension
+                cur.execute("SELECT PostGIS_Version();")
+                version = cur.fetchone()
+                cur.close()
+                conn.close()
+                
+                msg = f"✅ Connection successful!\n\n"
+                msg += f"Host: {POSTGIS_HOST}:{POSTGIS_PORT}\n"
+                msg += f"Database: {POSTGIS_DB}\n"
+                msg += f"User: {POSTGIS_USER}\n"
+                if version:
+                    msg += f"\nPostGIS Version: {version[0]}"
+                
+                messagebox.showinfo("Connection Test", msg)
+            except Exception as e:
+                conn.close()
+                messagebox.showwarning("Connected but...", 
+                    f"Connected to database but PostGIS extension may not be installed.\n\n"
+                    f"Error: {e}\n\n"
+                    f"Install PostGIS extension:\nCREATE EXTENSION postgis;")
+        else:
+            messagebox.showerror("Connection Failed", 
+                f"❌ Could not connect to database.\n\n"
+                f"Possible issues:\n"
+                f"• PostgreSQL is not running\n"
+                f"• Wrong credentials\n"
+                f"• Database does not exist\n"
+                f"• Firewall blocking connection\n"
+                f"• psycopg2 not installed (pip install psycopg2-binary)")
+            
+            # Restore old values
+            POSTGIS_HOST, POSTGIS_PORT, POSTGIS_DB, POSTGIS_USER, POSTGIS_PASSWORD = old_values
     
     def save_conn():
+        """Save connection and close dialog."""
         global POSTGIS_HOST, POSTGIS_PORT, POSTGIS_DB, POSTGIS_USER, POSTGIS_PASSWORD
-        POSTGIS_HOST = entries["host"].get()
-        POSTGIS_PORT = entries["port"].get() or "5432"
-        POSTGIS_DB = entries["db"].get()
-        POSTGIS_USER = entries["user"].get()
+        
+        POSTGIS_HOST = entries["host"].get().strip()
+        POSTGIS_PORT = entries["port"].get().strip() or "5432"
+        POSTGIS_DB = entries["db"].get().strip()
+        POSTGIS_USER = entries["user"].get().strip()
         POSTGIS_PASSWORD = entries["password"].get()
+        
+        if not all([POSTGIS_HOST, POSTGIS_DB, POSTGIS_USER]):
+            messagebox.showerror("Error", "Please fill in Host, Database, and User fields.")
+            return
+        
         if connect_postgis():
-            messagebox.showinfo("Connected", "PostGIS connection successful!")
+            messagebox.showinfo("Saved", "✅ Connection saved successfully!\n\nYou can now use PostGIS features.")
             dialog.destroy()
         else:
-            messagebox.showerror("Error", "Connection failed. Check credentials and ensure PostGIS is installed.")
+            messagebox.showerror("Error", "Connection failed. Please test connection first.")
     
-    tk.Button(dialog, text="Connect", command=save_conn).pack(pady=10)
+    # Buttons
+    btn_frame = tk.Frame(dialog)
+    btn_frame.pack(pady=15)
+    
+    tk.Button(btn_frame, text="Test Connection", bg="#FF9800", fg="white", 
+              command=test_connection, font=("Segoe UI", 9)).pack(side="left", padx=5)
+    tk.Button(btn_frame, text="Save & Connect", bg="#4CAF50", fg="white", 
+              command=save_conn, font=("Segoe UI", 9)).pack(side="left", padx=5)
+    tk.Button(btn_frame, text="Cancel", bg="#9E9E9E", fg="white", 
+              command=dialog.destroy, font=("Segoe UI", 9)).pack(side="left", padx=5)
 
 def on_postgis_insert():
     """Insert current point into PostGIS."""
@@ -1158,7 +1418,7 @@ def on_postgis_query():
     tk.Button(dialog, text="Query", command=query).pack(pady=10)
 
 def on_create_buffer():
-    """Create buffer around current point."""
+    """Create buffer around current point with explanation and visualization."""
     lat = result_vars["Latitude"].get()
     lon = result_vars["Longitude"].get()
     if not lat or not lon:
@@ -1166,39 +1426,101 @@ def on_create_buffer():
         return
     
     dialog = tk.Toplevel(root)
-    dialog.title("Create Buffer")
-    dialog.geometry("250x100")
-    tk.Label(dialog, text="Radius (meters):").pack()
-    radius_entry = tk.Entry(dialog, width=20)
-    radius_entry.insert(0, "100")
-    radius_entry.pack()
+    dialog.title("Create Buffer / Krijo Zonë Rrethore")
+    dialog.geometry("450x320")
+    
+    # Explanation
+    explanation = """
+📍 What is a Buffer? / Çfarë është një Buffer?
+
+A buffer creates a circular zone (polygon) around a point.
+Një buffer krijon një zonë rrethore (poligon) rreth një pike.
+
+🎯 Use cases / Përdorimet:
+• Coverage areas (e.g., 500m radius around a store)
+• Impact zones (e.g., noise pollution area)
+• Service areas (e.g., delivery radius)
+• GIS analysis (spatial queries, intersections)
+
+The buffer will be exported as a GeoJSON polygon that you can:
+• Import in QGIS, ArcGIS, or other GIS software
+• Visualize on maps
+• Use for spatial analysis
+    """
+    
+    tk.Label(dialog, text=explanation, justify="left", font=("Segoe UI", 8), 
+             wraplength=420, bg="#F0F0F0", padx=10, pady=10).pack(pady=10, padx=10, fill="both")
+    
+    # Input frame
+    input_frame = tk.Frame(dialog)
+    input_frame.pack(pady=10)
+    
+    tk.Label(input_frame, text="Center Point:", font=("Segoe UI", 9, "bold")).grid(row=0, column=0, columnspan=2, sticky="w", pady=5)
+    tk.Label(input_frame, text=f"Lat: {lat}, Lon: {lon}", font=("Segoe UI", 8)).grid(row=1, column=0, columnspan=2, sticky="w")
+    tk.Label(input_frame, text=result_vars["Display Address"].get() or "Unknown", 
+             font=("Segoe UI", 8), wraplength=350).grid(row=2, column=0, columnspan=2, sticky="w", pady=(0,10))
+    
+    tk.Label(input_frame, text="Radius (meters):", font=("Segoe UI", 9)).grid(row=3, column=0, sticky="w", padx=5)
+    radius_entry = tk.Entry(input_frame, width=15, font=("Segoe UI", 10))
+    radius_entry.insert(0, "500")
+    radius_entry.grid(row=3, column=1, padx=5)
+    
+    tk.Label(input_frame, text="Examples: 100m, 500m, 1000m, 5000m", 
+             font=("Segoe UI", 7), fg="#666").grid(row=4, column=0, columnspan=2, pady=5)
     
     def create():
         try:
             radius = float(radius_entry.get())
+            if radius <= 0:
+                messagebox.showerror("Error", "Radius must be greater than 0")
+                return
+            
             buffer_geom = create_buffer(float(lat), float(lon), radius)
             if buffer_geom:
                 # Export buffer as GeoJSON
-                filename = filedialog.asksaveasfilename(defaultextension=".geojson", filetypes=[("GeoJSON", "*.geojson")])
+                filename = filedialog.asksaveasfilename(
+                    defaultextension=".geojson", 
+                    filetypes=[("GeoJSON", "*.geojson"), ("JSON", "*.json")],
+                    title="Save Buffer as GeoJSON"
+                )
                 if filename:
                     geojson = {
                         "type": "FeatureCollection",
                         "features": [{
                             "type": "Feature",
                             "geometry": buffer_geom,
-                            "properties": {"radius_meters": radius}
+                            "properties": {
+                                "radius_meters": radius,
+                                "center_lat": float(lat),
+                                "center_lon": float(lon),
+                                "location": result_vars["Display Address"].get() or "Unknown",
+                                "created": datetime.now().isoformat()
+                            }
                         }]
                     }
                     with open(filename, "w", encoding="utf8") as f:
-                        json.dump(geojson, f, indent=2)
-                    messagebox.showinfo("Success", f"Buffer saved to {filename}")
+                        json.dump(geojson, f, indent=2, ensure_ascii=False)
+                    
+                    msg = f"✅ Buffer created successfully!\n\n"
+                    msg += f"📍 Center: {result_vars['Display Address'].get() or 'Unknown'}\n"
+                    msg += f"📏 Radius: {radius} meters ({radius/1000:.2f} km)\n"
+                    msg += f"💾 Saved to: {filename}\n\n"
+                    msg += f"You can now:\n"
+                    msg += f"• Import in QGIS/ArcGIS\n"
+                    msg += f"• View on geojson.io\n"
+                    msg += f"• Use for spatial analysis"
+                    
+                    messagebox.showinfo("Success", msg)
+                    dialog.destroy()
             else:
-                messagebox.showerror("Error", "Buffer creation failed. Install: pip install shapely geopandas")
-            dialog.destroy()
+                messagebox.showerror("Error", "Buffer creation failed.\n\nInstall required packages:\npip install shapely geopandas")
+        except ValueError:
+            messagebox.showerror("Error", "Invalid radius. Please enter a valid number.")
         except Exception as e:
             messagebox.showerror("Error", f"Failed: {e}")
     
-    tk.Button(dialog, text="Create", command=create).pack(pady=10)
+    tk.Button(dialog, text="Create Buffer / Krijo Buffer", bg="#4CAF50", fg="white", 
+              command=create, font=("Segoe UI", 10)).pack(pady=10)
 
 # -------------------------
 # Build GUI
