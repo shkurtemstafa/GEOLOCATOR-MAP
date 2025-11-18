@@ -18,6 +18,23 @@ try:
 except Exception:
     TKHTML_AVAILABLE = False
 
+# PIL for images
+try:
+    from PIL import Image, ImageTk
+    PIL_AVAILABLE = True
+except Exception:
+    PIL_AVAILABLE = False
+
+# Matplotlib for charts
+try:
+    import matplotlib
+    matplotlib.use('TkAgg')
+    from matplotlib.figure import Figure
+    from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+    MATPLOTLIB_AVAILABLE = True
+except Exception:
+    MATPLOTLIB_AVAILABLE = False
+
 # Optional GIS libraries:
 try:
     import geopandas as gpd
@@ -278,6 +295,8 @@ def get_weather_info(lat, lon):
     except:
         pass
     return None
+
+# Image functions removed - using visual charts instead
 
 def get_address_suggestions(query):
     """Get address suggestions from Nominatim - with caching and delay"""
@@ -1002,7 +1021,7 @@ def on_find_coordinates():
         add_to_history(f"Address -> {address}")
         root.update()  # Update UI immediately
         
-        # Load extra info in background (non-blocking)
+        # Load extra info in background
         elevation = get_elevation(data["latitude"], data["longitude"])
         result_vars["Altitude"].set(f"{elevation} m" if elevation is not None else "N/A")
         
@@ -2238,19 +2257,10 @@ def on_load_favorite():
             return
         
         fav = favorite_locations[selection[0]]
-        
-        # Load into fields
-        address_entry.delete(0, tk.END)
-        lat_entry.delete(0, tk.END)
-        lon_entry.delete(0, tk.END)
-        ip_entry.delete(0, tk.END)
-        
-        lat_entry.insert(0, str(fav['lat']))
-        lon_entry.insert(0, str(fav['lon']))
-        
-        # Trigger search
-        on_find_address()
         dialog.destroy()
+        
+        # Use the quick load function
+        load_favorite_quick(fav)
     
     def delete():
         selection = listbox.curselection()
@@ -2273,41 +2283,196 @@ def on_load_favorite():
     tk.Button(btn_frame, text="Delete", bg=ERROR_RED, fg="white", command=delete, width=12).pack(side="left", padx=5)
     tk.Button(btn_frame, text="Cancel", bg=TEXT_SECONDARY, fg="white", command=dialog.destroy, width=12).pack(side="left", padx=5)
 
+def show_location_details():
+    """Show location details with visual graphs"""
+    lat = result_vars["Latitude"].get()
+    lon = result_vars["Longitude"].get()
+    address = result_vars["Display Address"].get()
+    city = result_vars["City"].get()
+    country = result_vars["Country"].get()
+    altitude = result_vars["Altitude"].get()
+    weather = result_vars["Weather"].get()
+    timezone = result_vars["Timezone"].get()
+    
+    if not lat or not lon:
+        messagebox.showerror("Error", "No location to show. Search for a location first.")
+        return
+    
+    # Create dialog
+    dialog = tk.Toplevel(root)
+    dialog.title("📊 Location Overview")
+    dialog.geometry("700x650")
+    dialog.configure(bg=BG_COLOR)
+    
+    # Title
+    tk.Label(dialog, text="📊 Location Overview", font=("Segoe UI", 18, "bold"), 
+             bg=BG_COLOR, fg=PRIMARY_BLUE).pack(pady=15)
+    
+    # Main info card
+    info_frame = tk.LabelFrame(dialog, text="📍 Location Information", bg=CARD_BG, 
+                               padx=20, pady=15, font=("Segoe UI", 12, "bold"))
+    info_frame.pack(fill="x", padx=20, pady=10)
+    
+    # Address
+    tk.Label(info_frame, text=address[:70], font=("Segoe UI", 11, "bold"), 
+             bg=CARD_BG, wraplength=650).pack(anchor="w", pady=5)
+    
+    # City, Country
+    if city and country:
+        tk.Label(info_frame, text=f"📍 {city}, {country}", font=("Segoe UI", 10), 
+                bg=CARD_BG, fg=TEXT_SECONDARY).pack(anchor="w", pady=3)
+    elif country:
+        tk.Label(info_frame, text=f"📍 {country}", font=("Segoe UI", 10), 
+                bg=CARD_BG, fg=TEXT_SECONDARY).pack(anchor="w", pady=3)
+    
+    # Coordinates
+    tk.Label(info_frame, text=f"🌐 Coordinates: {lat}, {lon}", font=("Segoe UI", 10), 
+            bg=CARD_BG).pack(anchor="w", pady=3)
+    
+    # Altitude
+    if altitude and altitude != "Loading...":
+        tk.Label(info_frame, text=f"⛰️ Altitude: {altitude}", font=("Segoe UI", 10), 
+                bg=CARD_BG).pack(anchor="w", pady=3)
+    
+    # Weather
+    if weather and weather != "Loading...":
+        tk.Label(info_frame, text=f"🌤️ Weather: {weather}", font=("Segoe UI", 10), 
+                bg=CARD_BG).pack(anchor="w", pady=3)
+    
+    # Timezone
+    if timezone and timezone != "Loading...":
+        tz_short = timezone.split(' - ')[0] if ' - ' in timezone else timezone
+        tk.Label(info_frame, text=f"🕐 Timezone: {tz_short}", font=("Segoe UI", 10), 
+                bg=CARD_BG).pack(anchor="w", pady=3)
+    
+    # Visual chart if matplotlib available
+    if MATPLOTLIB_AVAILABLE:
+        chart_frame = tk.LabelFrame(dialog, text="📊 Visual Data", bg=CARD_BG, 
+                                    padx=10, pady=10, font=("Segoe UI", 11, "bold"))
+        chart_frame.pack(fill="both", expand=True, padx=20, pady=10)
+        
+        try:
+            # Create figure with subplots
+            fig = Figure(figsize=(6, 3.5), facecolor=CARD_BG)
+            
+            # Parse data for visualization
+            try:
+                lat_val = float(lat)
+                lon_val = float(lon)
+                alt_val = float(altitude.replace(' m', '').replace('N/A', '0')) if altitude else 0
+                
+                # Create bar chart
+                ax = fig.add_subplot(111)
+                
+                categories = ['Latitude', 'Longitude', 'Altitude\n(m)']
+                values = [lat_val, lon_val, alt_val/10]  # Scale altitude for visibility
+                colors = [PRIMARY_BLUE, SUCCESS_GREEN, WARNING_ORANGE]
+                
+                bars = ax.bar(categories, values, color=colors, alpha=0.7, edgecolor='black', linewidth=1.5)
+                
+                # Add value labels on bars
+                for bar, val in zip(bars, [lat_val, lon_val, alt_val]):
+                    height = bar.get_height()
+                    label = f'{val:.2f}' if val < 1000 else f'{val:.0f}'
+                    ax.text(bar.get_x() + bar.get_width()/2., height,
+                           label, ha='center', va='bottom', fontsize=10, fontweight='bold')
+                
+                ax.set_ylabel('Value', fontsize=11, fontweight='bold')
+                ax.set_title('Location Data Visualization', fontsize=12, fontweight='bold', pad=10)
+                ax.grid(axis='y', alpha=0.3, linestyle='--')
+                ax.axhline(y=0, color='black', linewidth=0.8)
+                
+                # Embed chart
+                canvas = FigureCanvasTkAgg(fig, master=chart_frame)
+                canvas.draw()
+                canvas.get_tk_widget().pack(fill="both", expand=True)
+                
+            except Exception as e:
+                tk.Label(chart_frame, text=f"Could not create chart: {e}", 
+                        font=("Segoe UI", 9), bg=CARD_BG, fg=TEXT_SECONDARY).pack(pady=20)
+        except Exception as e:
+            tk.Label(chart_frame, text="Chart unavailable", 
+                    font=("Segoe UI", 9), bg=CARD_BG, fg=TEXT_SECONDARY).pack(pady=20)
+    else:
+        # Show text summary if no matplotlib
+        summary_frame = tk.LabelFrame(dialog, text="📋 Summary", bg=CARD_BG, 
+                                     padx=20, pady=15, font=("Segoe UI", 11, "bold"))
+        summary_frame.pack(fill="both", expand=True, padx=20, pady=10)
+        
+        tk.Label(summary_frame, text="Install matplotlib for visual charts:", 
+                font=("Segoe UI", 9, "italic"), bg=CARD_BG, fg=TEXT_SECONDARY).pack(pady=5)
+        tk.Label(summary_frame, text="pip install matplotlib", 
+                font=("Segoe UI", 9, "bold"), bg=CARD_BG, fg=PRIMARY_BLUE).pack()
+    
+    # Close button
+    tk.Button(dialog, text="Close", bg=PRIMARY_BLUE, fg="white", 
+              command=dialog.destroy, font=("Segoe UI", 11, "bold"), width=15).pack(pady=15)
+
 def on_show_statistics():
-    """Show statistics dashboard"""
+    """Show statistics dashboard with visual chart"""
     stats = get_statistics()
     
     # Dialog
     dialog = tk.Toplevel(root)
     dialog.title("Statistics Dashboard")
-    dialog.geometry("500x500")
+    dialog.geometry("700x650")
     dialog.configure(bg=BG_COLOR)
     
-    tk.Label(dialog, text="📊 Statistics Dashboard", font=("Segoe UI", 14, "bold"), bg=BG_COLOR).pack(pady=10)
+    tk.Label(dialog, text="📊 Statistics Dashboard", font=("Segoe UI", 16, "bold"), 
+             bg=BG_COLOR, fg=PRIMARY_BLUE).pack(pady=10)
     
     # Stats frame
-    stats_frame = tk.LabelFrame(dialog, text="Search Statistics", bg=CARD_BG, padx=20, pady=15)
+    stats_frame = tk.LabelFrame(dialog, text="Search Statistics", bg=CARD_BG, padx=20, pady=15, 
+                                font=("Segoe UI", 11, "bold"))
     stats_frame.pack(fill="x", padx=20, pady=10)
     
-    tk.Label(stats_frame, text=f"Total Searches: {stats['total']}", font=("Segoe UI", 11, "bold"), bg=CARD_BG).pack(anchor="w", pady=5)
-    tk.Label(stats_frame, text=f"Today: {stats['today']}", font=("Segoe UI", 10), bg=CARD_BG).pack(anchor="w", pady=2)
+    tk.Label(stats_frame, text=f"Total Searches: {stats['total']}", font=("Segoe UI", 12, "bold"), 
+             bg=CARD_BG, fg=SUCCESS_GREEN).pack(anchor="w", pady=5)
+    tk.Label(stats_frame, text=f"Today: {stats['today']}", font=("Segoe UI", 11), bg=CARD_BG).pack(anchor="w", pady=2)
     
-    if stats['by_type']:
-        tk.Label(stats_frame, text="\nBy Type:", font=("Segoe UI", 10, "bold"), bg=CARD_BG).pack(anchor="w", pady=5)
+    # Visual chart if matplotlib available
+    if MATPLOTLIB_AVAILABLE and stats['by_type']:
+        chart_frame = tk.LabelFrame(dialog, text="📊 Search Types Chart", bg=CARD_BG, padx=10, pady=10,
+                                    font=("Segoe UI", 11, "bold"))
+        chart_frame.pack(fill="both", expand=True, padx=20, pady=10)
+        
+        # Create bar chart
+        fig = Figure(figsize=(6, 3), facecolor=CARD_BG)
+        ax = fig.add_subplot(111)
+        
+        types = list(stats['by_type'].keys())
+        counts = list(stats['by_type'].values())
+        colors = [PRIMARY_BLUE, SUCCESS_GREEN, WARNING_ORANGE, ERROR_RED][:len(types)]
+        
+        ax.bar(types, counts, color=colors, alpha=0.8)
+        ax.set_ylabel('Number of Searches', fontsize=10)
+        ax.set_title('Searches by Type', fontsize=11, fontweight='bold')
+        ax.grid(axis='y', alpha=0.3)
+        
+        # Embed chart in tkinter
+        canvas = FigureCanvasTkAgg(fig, master=chart_frame)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill="both", expand=True)
+    elif stats['by_type']:
+        # Text-based if no matplotlib
+        type_frame = tk.LabelFrame(dialog, text="By Type", bg=CARD_BG, padx=20, pady=15)
+        type_frame.pack(fill="x", padx=20, pady=10)
         for search_type, count in stats['by_type'].items():
-            tk.Label(stats_frame, text=f"  • {search_type}: {count}", font=("Segoe UI", 9), bg=CARD_BG).pack(anchor="w")
+            tk.Label(type_frame, text=f"  • {search_type}: {count}", font=("Segoe UI", 10), bg=CARD_BG).pack(anchor="w", pady=2)
     
     # Recent searches
-    recent_frame = tk.LabelFrame(dialog, text="Recent Searches", bg=CARD_BG, padx=20, pady=15)
-    recent_frame.pack(fill="both", expand=True, padx=20, pady=10)
+    recent_frame = tk.LabelFrame(dialog, text="Recent Searches", bg=CARD_BG, padx=20, pady=15,
+                                 font=("Segoe UI", 10, "bold"))
+    recent_frame.pack(fill="x", padx=20, pady=10)
     
     if stats['recent']:
-        for name, date in stats['recent'][:10]:
-            tk.Label(recent_frame, text=f"• {name[:50]} - {date}", font=("Segoe UI", 8), bg=CARD_BG).pack(anchor="w", pady=2)
+        for name, date in stats['recent'][:5]:
+            tk.Label(recent_frame, text=f"• {name[:60]} - {date}", font=("Segoe UI", 9), bg=CARD_BG).pack(anchor="w", pady=2)
     else:
         tk.Label(recent_frame, text="No searches yet", font=("Segoe UI", 9), bg=CARD_BG, fg=TEXT_SECONDARY).pack()
     
-    tk.Button(dialog, text="Close", bg=PRIMARY_BLUE, fg="white", command=dialog.destroy, width=15).pack(pady=10)
+    tk.Button(dialog, text="Close", bg=PRIMARY_BLUE, fg="white", command=dialog.destroy, 
+              font=("Segoe UI", 10), width=15).pack(pady=15)
 
 def update_favorites_dropdown():
     """Update favorites dropdown if it exists"""
@@ -2325,13 +2490,56 @@ def update_favorites_dropdown():
     except:
         pass
 
+def load_favorite_extra_info(lat, lon):
+    """Load extra info for favorite location"""
+    try:
+        # Get reverse geocode for full details
+        location = geolocator.reverse(f"{lat}, {lon}", addressdetails=True, exactly_one=True, timeout=10)
+        if location:
+            data = extract_address_fields(location)
+            result_vars["Country"].set(data["country"] or "")
+            result_vars["Region"].set(data["state"] or "")
+            result_vars["City"].set(data["city"] or "")
+            result_vars["Postal Code"].set(data["postcode"] or "")
+            result_vars["Bounding Box"].set(", ".join(data["boundingbox"]) if data["boundingbox"] else "")
+        
+        # Load weather, timezone, elevation
+        elevation = get_elevation(lat, lon)
+        result_vars["Altitude"].set(f"{elevation} m" if elevation is not None else "N/A")
+        
+        tz_info = get_timezone_info(lat, lon)
+        if tz_info:
+            result_vars["Timezone"].set(f"{tz_info['timezone']} (UTC{tz_info['utc_offset']:+.1f}) - {tz_info['current_time']}")
+        
+        weather_info = get_weather_info(lat, lon)
+        if weather_info:
+            result_vars["Weather"].set(f"{weather_info['condition']} {weather_info['temperature']}, Wind: {weather_info['windspeed']}")
+    except:
+        pass
+
 def load_favorite_quick(fav):
-    """Quick load favorite"""
+    """Quick load favorite - use saved address directly"""
+    # Clear all fields first
+    address_entry.delete(0, tk.END)
     lat_entry.delete(0, tk.END)
     lon_entry.delete(0, tk.END)
+    ip_entry.delete(0, tk.END)
+    
+    # Fill in the saved data directly
+    result_vars["Latitude"].set(str(fav['lat']))
+    result_vars["Longitude"].set(str(fav['lon']))
+    result_vars["Display Address"].set(fav['address'])
+    result_vars["Altitude"].set("Loading...")
+    result_vars["Timezone"].set("Loading...")
+    result_vars["Weather"].set("Loading...")
+    result_vars["ISP"].set("")
+    
+    # Also fill coordinate fields so user can see them
     lat_entry.insert(0, str(fav['lat']))
     lon_entry.insert(0, str(fav['lon']))
-    on_find_address()
+    
+    # Load additional info in background
+    root.after(100, lambda: load_favorite_extra_info(fav['lat'], fav['lon']))
 
 def toggle_theme():
     """Toggle between light and dark theme"""
@@ -2805,9 +3013,10 @@ for label_text, var_key in [
 
 controls = tk.Frame(right, bg=BG_COLOR)
 controls.pack(fill="x", pady=8)
-tk.Button(controls, text="Clear Results", bg="#9E9E9E", fg="white", command=clear_results).pack(side="right", padx=8)
+tk.Button(controls, text="📊 Show Overview", bg=SUCCESS_GREEN, fg="white", command=show_location_details, font=("Segoe UI", 10, "bold")).pack(side="left", padx=8)
 tk.Button(controls, text="Copy Coordinates", bg=PRIMARY_BLUE, fg="white",
-          command=lambda: root.clipboard_append(f"{result_vars['Latitude'].get()},{result_vars['Longitude'].get()}")).pack(side="right", padx=8)
+          command=lambda: root.clipboard_append(f"{result_vars['Latitude'].get()},{result_vars['Longitude'].get()}"), font=("Segoe UI", 10)).pack(side="right", padx=8)
+tk.Button(controls, text="Clear Results", bg="#9E9E9E", fg="white", command=clear_results, font=("Segoe UI", 10)).pack(side="right", padx=8)
 
 footer_text = "✨ Veçori të Avancuara: GIS (GeoJSON, buffers, distanca), GNSS (GPX import/export), Gjeoreferencimi (transformime UTM/CRS), PostGIS (databaza hapësinore). "
 footer_text += "Paketa opsionale: geopandas, shapely, pyproj, gpxpy, psycopg2-binary | "

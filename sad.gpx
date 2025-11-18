@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="gpx.py -- https://github.com/tkrajina/gpxpy">
-  <wpt lat="42.5869578" lon="20.9021231">
-    <name>Kosova / Kosovo</name>
+  <wpt lat="39.7837304" lon="-100.445882">
+    <name>United States of America</name>
   </wpt>
   <trk>
     <name>Exported Track</name>
     <trkseg>
-      <trkpt lat="42.5869578" lon="20.9021231">
-        <time>2025-11-18T03:22:31.518916</time>
+      <trkpt lat="39.7837304" lon="-100.445882">
+        <time>2025-11-18T03:28:54.379523</time>
       </trkpt>
     </trkseg>
   </trk>

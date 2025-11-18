@@ -17,7 +17,7 @@
             <meta name="viewport" content="width=device-width,
                 initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             <style>
-                #map_ed862fcea8690de5fcf546354703f10c {
+                #map_924cebe29ffe9343bf49399967b810a0 {
                     position: relative;
                     width: 100.0%;
                     height: 100.0%;
@@ -73,21 +73,21 @@
                 box-shadow: 0 2px 6px rgba(0,0,0,0.3);
                 font-family: Arial, sans-serif;">
         <h4 style="margin: 0 0 5px 0; color: #1E88E5;">📍 GeoLocator Map</h4>
-        <p style="margin: 0; font-size: 12px;"><strong>Default View:</strong> Satellite View (Esri World Imagery)</p>
+        <p style="margin: 0; font-size: 12px;"><strong>Default View:</strong> Standard Map (OpenStreetMap)</p>
         <p style="margin: 5px 0 0 0; font-size: 11px; color: #666;">
             Use layer control (top-right) to switch between map types
         </p>
     </div>
     
     
-            <div class="folium-map" id="map_ed862fcea8690de5fcf546354703f10c" ></div>
+            <div class="folium-map" id="map_924cebe29ffe9343bf49399967b810a0" ></div>
         
 </body>
 <script>
     
     
-            var map_ed862fcea8690de5fcf546354703f10c = L.map(
-                "map_ed862fcea8690de5fcf546354703f10c",
+            var map_924cebe29ffe9343bf49399967b810a0 = L.map(
+                "map_924cebe29ffe9343bf49399967b810a0",
                 {
                     center: [42.5869578, 20.9021231],
                     crs: L.CRS.EPSG3857,
@@ -104,27 +104,7 @@
 
         
     
-            var tile_layer_7d558962f5f1f2deed094d6d0dbe8e60 = L.tileLayer(
-                "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-                {
-  "minZoom": 0,
-  "maxZoom": 18,
-  "maxNativeZoom": 18,
-  "noWrap": false,
-  "attribution": "Esri World Imagery",
-  "subdomains": "abc",
-  "detectRetina": false,
-  "tms": false,
-  "opacity": 1,
-}
-
-            );
-        
-    
-            tile_layer_7d558962f5f1f2deed094d6d0dbe8e60.addTo(map_ed862fcea8690de5fcf546354703f10c);
-        
-    
-            var tile_layer_0814d276b84cc90b6ae8802b7cae54d6 = L.tileLayer(
+            var tile_layer_dd9e8507a16e86193a5c0540f02403ee = L.tileLayer(
                 "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                 {
   "minZoom": 0,
@@ -141,33 +121,53 @@
             );
         
     
-            tile_layer_0814d276b84cc90b6ae8802b7cae54d6.addTo(map_ed862fcea8690de5fcf546354703f10c);
+            tile_layer_dd9e8507a16e86193a5c0540f02403ee.addTo(map_924cebe29ffe9343bf49399967b810a0);
         
     
-            var circle_marker_6992ff559b64f4cca053a2bc6e626d97 = L.circleMarker(
+            var tile_layer_1d9bbff8609e4b7c1cc632b09e01c477 = L.tileLayer(
+                "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Esri World Imagery",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_1d9bbff8609e4b7c1cc632b09e01c477.addTo(map_924cebe29ffe9343bf49399967b810a0);
+        
+    
+            var circle_marker_b49626e2a1a4745e9789495727a8fd98 = L.circleMarker(
                 [42.5869578, 20.9021231],
                 {"bubblingMouseEvents": true, "color": "#1E88E5", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#1E88E5", "fillOpacity": 0.8, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
-            ).addTo(map_ed862fcea8690de5fcf546354703f10c);
+            ).addTo(map_924cebe29ffe9343bf49399967b810a0);
         
     
-        var popup_634f53d8bb4421130c2bcf4618f5c78b = L.popup({
+        var popup_a576b556aa26bc84d0e64151232efa27 = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_93856dd77d1db14de3974959bdac9396 = $(`<div id="html_93856dd77d1db14de3974959bdac9396" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial, sans-serif; min-width: 200px;">         <h3 style="margin: 5px 0; color: #1E88E5;">📍 Lokacioni</h3>         <hr style="margin: 5px 0;">         <p style="margin: 3px 0;"><strong>Adresa:</strong><br>Kosova / Kosovo</p>         <p style="margin: 3px 0;"><strong>Koordinata:</strong><br>Lat: 42.586958°<br>Lon: 20.902123°</p>         <p style="margin: 3px 0;"><strong>Vendndodhja:</strong><br>         , <br>         Kosova / Kosovo</p>         <p style="margin: 3px 0;"><strong>Lartësia:</strong> 589.0 m</p>         <p style="margin: 3px 0; font-size: 10px; color: #666;">Saktësia: ~10-50m (varësisht nga burimi)</p>     </div>     </div>`)[0];
-                popup_634f53d8bb4421130c2bcf4618f5c78b.setContent(html_93856dd77d1db14de3974959bdac9396);
+                var html_7ea37168bb5322f99e878c1e5df5283c = $(`<div id="html_7ea37168bb5322f99e878c1e5df5283c" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial, sans-serif; min-width: 200px;">         <h3 style="margin: 5px 0; color: #1E88E5;">📍 Lokacioni</h3>         <hr style="margin: 5px 0;">         <p style="margin: 3px 0;"><strong>Adresa:</strong><br>Kosova / Kosovo</p>         <p style="margin: 3px 0;"><strong>Koordinata:</strong><br>Lat: 42.586958°<br>Lon: 20.902123°</p>         <p style="margin: 3px 0;"><strong>Vendndodhja:</strong><br>         Komuna e Drenasit / Opština Glogovac, <br>         Kosova / Kosovo</p>         <p style="margin: 3px 0;"><strong>Lartësia:</strong> 589.0 m</p>         <p style="margin: 3px 0; font-size: 10px; color: #666;">Saktësia: ~10-50m (varësisht nga burimi)</p>     </div>     </div>`)[0];
+                popup_a576b556aa26bc84d0e64151232efa27.setContent(html_7ea37168bb5322f99e878c1e5df5283c);
             
         
 
-        circle_marker_6992ff559b64f4cca053a2bc6e626d97.bindPopup(popup_634f53d8bb4421130c2bcf4618f5c78b)
+        circle_marker_b49626e2a1a4745e9789495727a8fd98.bindPopup(popup_a576b556aa26bc84d0e64151232efa27)
         ;
 
         
     
     
-            circle_marker_6992ff559b64f4cca053a2bc6e626d97.bindTooltip(
+            circle_marker_b49626e2a1a4745e9789495727a8fd98.bindTooltip(
                 `<div>
                      Lat: 42.586958, Lon: 20.902123
                  </div>`,
@@ -177,14 +177,14 @@
             );
         
     
-            var marker_3ac436d9953108405b7d93c32917c392 = L.marker(
+            var marker_afeeda44240d29441455c6a0a789daf4 = L.marker(
                 [42.5869578, 20.9021231],
                 {
 }
-            ).addTo(map_ed862fcea8690de5fcf546354703f10c);
+            ).addTo(map_924cebe29ffe9343bf49399967b810a0);
         
     
-            var icon_349b5c106975a12ca6328b36710b4858 = L.AwesomeMarkers.icon(
+            var icon_bd6a805cc75e0350913726f5fcceb46e = L.AwesomeMarkers.icon(
                 {
   "markerColor": "blue",
   "iconColor": "white",
@@ -195,24 +195,24 @@
             );
         
     
-        var popup_248a2a7b5668caa17afc5f10ed9dff31 = L.popup({
+        var popup_6281641e49e88c89cc74dfb115afef6a = L.popup({
   "maxWidth": 300,
 });
 
         
             
-                var html_20a318a5316fb9e87ba815b50ee10d78 = $(`<div id="html_20a318a5316fb9e87ba815b50ee10d78" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial, sans-serif; min-width: 200px;">         <h3 style="margin: 5px 0; color: #1E88E5;">📍 Lokacioni</h3>         <hr style="margin: 5px 0;">         <p style="margin: 3px 0;"><strong>Adresa:</strong><br>Kosova / Kosovo</p>         <p style="margin: 3px 0;"><strong>Koordinata:</strong><br>Lat: 42.586958°<br>Lon: 20.902123°</p>         <p style="margin: 3px 0;"><strong>Vendndodhja:</strong><br>         , <br>         Kosova / Kosovo</p>         <p style="margin: 3px 0;"><strong>Lartësia:</strong> 589.0 m</p>         <p style="margin: 3px 0; font-size: 10px; color: #666;">Saktësia: ~10-50m (varësisht nga burimi)</p>     </div>     </div>`)[0];
-                popup_248a2a7b5668caa17afc5f10ed9dff31.setContent(html_20a318a5316fb9e87ba815b50ee10d78);
+                var html_3ee43daaae0e2c3f18032efa7873f7b9 = $(`<div id="html_3ee43daaae0e2c3f18032efa7873f7b9" style="width: 100.0%; height: 100.0%;">     <div style="font-family: Arial, sans-serif; min-width: 200px;">         <h3 style="margin: 5px 0; color: #1E88E5;">📍 Lokacioni</h3>         <hr style="margin: 5px 0;">         <p style="margin: 3px 0;"><strong>Adresa:</strong><br>Kosova / Kosovo</p>         <p style="margin: 3px 0;"><strong>Koordinata:</strong><br>Lat: 42.586958°<br>Lon: 20.902123°</p>         <p style="margin: 3px 0;"><strong>Vendndodhja:</strong><br>         Komuna e Drenasit / Opština Glogovac, <br>         Kosova / Kosovo</p>         <p style="margin: 3px 0;"><strong>Lartësia:</strong> 589.0 m</p>         <p style="margin: 3px 0; font-size: 10px; color: #666;">Saktësia: ~10-50m (varësisht nga burimi)</p>     </div>     </div>`)[0];
+                popup_6281641e49e88c89cc74dfb115afef6a.setContent(html_3ee43daaae0e2c3f18032efa7873f7b9);
             
         
 
-        marker_3ac436d9953108405b7d93c32917c392.bindPopup(popup_248a2a7b5668caa17afc5f10ed9dff31)
+        marker_afeeda44240d29441455c6a0a789daf4.bindPopup(popup_6281641e49e88c89cc74dfb115afef6a)
         ;
 
         
     
     
-            marker_3ac436d9953108405b7d93c32917c392.bindTooltip(
+            marker_afeeda44240d29441455c6a0a789daf4.bindTooltip(
                 `<div>
                      Kliko për detaje
                  </div>`,
@@ -222,35 +222,35 @@
             );
         
     
-                marker_3ac436d9953108405b7d93c32917c392.setIcon(icon_349b5c106975a12ca6328b36710b4858);
+                marker_afeeda44240d29441455c6a0a789daf4.setIcon(icon_bd6a805cc75e0350913726f5fcceb46e);
             
     
-            var layer_control_be7db591205c6a72f3ab777a4d2401fd_layers = {
+            var layer_control_8a3930fdc277eeededf54536c78cd7f7_layers = {
                 base_layers : {
-                    "\ud83d\udef0\ufe0f Satellite View (Esri)" : tile_layer_7d558962f5f1f2deed094d6d0dbe8e60,
-                    "\ud83d\uddfa\ufe0f Standard Map (OSM)" : tile_layer_0814d276b84cc90b6ae8802b7cae54d6,
+                    "\ud83d\uddfa\ufe0f Standard Map (OSM)" : tile_layer_dd9e8507a16e86193a5c0540f02403ee,
+                    "\ud83d\udef0\ufe0f Satellite View (Esri)" : tile_layer_1d9bbff8609e4b7c1cc632b09e01c477,
                 },
                 overlays :  {
                 },
             };
-            let layer_control_be7db591205c6a72f3ab777a4d2401fd = L.control.layers(
-                layer_control_be7db591205c6a72f3ab777a4d2401fd_layers.base_layers,
-                layer_control_be7db591205c6a72f3ab777a4d2401fd_layers.overlays,
+            let layer_control_8a3930fdc277eeededf54536c78cd7f7 = L.control.layers(
+                layer_control_8a3930fdc277eeededf54536c78cd7f7_layers.base_layers,
+                layer_control_8a3930fdc277eeededf54536c78cd7f7_layers.overlays,
                 {
   "position": "topright",
   "collapsed": false,
   "autoZIndex": true,
 }
-            ).addTo(map_ed862fcea8690de5fcf546354703f10c);
+            ).addTo(map_924cebe29ffe9343bf49399967b810a0);
 
         
     
-            var tile_layer_c789510aa68645e341a95ca86860c497 = L.tileLayer(
+            var tile_layer_630259e45d8df323a36535c09a2b39d5 = L.tileLayer(
                 "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                 {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
             );
-            var mini_map_bda7a2e74cee7ce7e44a76f1b070cc20 = new L.Control.MiniMap(
-                tile_layer_c789510aa68645e341a95ca86860c497,
+            var mini_map_37761f2fb3b6e1390bbf21981aa935ac = new L.Control.MiniMap(
+                tile_layer_630259e45d8df323a36535c09a2b39d5,
                 {
   "position": "bottomleft",
   "width": 150,
@@ -265,7 +265,7 @@
   "minimized": false,
 }
             );
-            map_ed862fcea8690de5fcf546354703f10c.addControl(mini_map_bda7a2e74cee7ce7e44a76f1b070cc20);
+            map_924cebe29ffe9343bf49399967b810a0.addControl(mini_map_37761f2fb3b6e1390bbf21981aa935ac);
         
     
             L.control.fullscreen(
@@ -275,10 +275,10 @@
   "titleCancel": "Exit Full Screen",
   "forceSeparateButton": false,
 }
-            ).addTo(map_ed862fcea8690de5fcf546354703f10c);
+            ).addTo(map_924cebe29ffe9343bf49399967b810a0);
         
     
-            var measure_control_15ad3047294b9ca829b638fe61787a18 = new L.Control.Measure(
+            var measure_control_36626f5ff9df1ee49b73ccca3a2a182f = new L.Control.Measure(
                 {
   "position": "topright",
   "primaryLengthUnit": "meters",
@@ -286,7 +286,7 @@
   "primaryAreaUnit": "sqmeters",
   "secondaryAreaUnit": "acres",
 });
-            map_ed862fcea8690de5fcf546354703f10c.addControl(measure_control_15ad3047294b9ca829b638fe61787a18);
+            map_924cebe29ffe9343bf49399967b810a0.addControl(measure_control_36626f5ff9df1ee49b73ccca3a2a182f);
 
             // Workaround for using this plugin with Leaflet>=1.8.0
             // https://github.com/ljagis/leaflet-measure/issues/171
