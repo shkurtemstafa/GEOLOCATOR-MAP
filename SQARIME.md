@@ -188,6 +188,68 @@ Adresa e plotë nga geocoder
 📍 Qyteti → Rajoni → Shteti
 ```
 
+### 10. ✅ Harta me Distanca - E RE!
+**Veçoria e re:** Trego distancat nga lokacioni yt deri në qytetet kryesore të botës.
+
+**Si funksionon:**
+- Krijon një hartë me vija blu që tregojnë distancat
+- Tregon 15 qytete kryesore të botës (New York, London, Tokyo, etj.)
+- Çdo vijë tregon distancën në kilometra dhe milje
+- Marker-ë për çdo qytet me informacione
+
+**Si të përdoret:**
+1. Kërko një lokacion
+2. Kliko "Show Distances to World"
+3. Harta hapet në browser me të gjitha distancat
+
+### 11. ✅ Import Adresë të Rastësishme nga CSV - E RE!
+**Veçoria e re:** Importo një adresë të rastësishme nga CSV për testim.
+
+**Si të përdoret:**
+1. Kliko "Import Random Address"
+2. Zgjidh skedarin CSV me adresa
+3. Një adresë e rastësishme vendoset në fushën e adresës
+4. Kliko "Find Coordinates" për të kërkuar
+
+### 12. ✅ Databaza PostGIS - Automatike!
+**Veçoria e re:** Të gjitha kërkesat ruhen automatikisht në databazë (nëse je i lidhur).
+
+**Si të konfigurosh:**
+1. Kliko "Connect PostGIS"
+2. Fut detajet e lidhjes
+3. Kliko "Test Connection"
+4. Kliko "Create Table" për të krijuar tabelën
+5. Tani të gjitha kërkesat ruhen automatikisht!
+
+**Tabela 'locations' përfshin:**
+- ID (automatik)
+- Emri i lokacionit
+- Lloji i kërkimit (address_search, coords_search, ip_search)
+- Latitude, Longitude
+- Geometry (për spatial queries)
+- Data e kërkimit
+
+### 13. ✅ Fshirje Automatike e Fushave - E RE!
+**Problemi:** Kur kërkoje me IP, adresa e vjetër mbetej e shfaqur.
+
+**Zgjidhja:**
+- Kur kërkon me **Address** → fshin Lat/Lon dhe IP
+- Kur kërkon me **Lat/Lon** → fshin Address dhe IP
+- Kur kërkon me **IP** → fshin Address dhe Lat/Lon
+- Rezultatet janë gjithmonë të qarta dhe të sakta!
+
+### 14. ✅ Ngjyra të Përmirësuara - E RE!
+**Ndryshimet:**
+- Background: Blu-gri i lehtë (#F5F7FA)
+- Cards: Të bardha të pastra (#FFFFFF)
+- Butona:
+  - Blu: Veçoritë kryesore
+  - Jeshil: GIS features
+  - Portokalli: GNSS/GPX
+  - Vjollcë: GeoJSON
+  - Kuq: PostGIS
+- Më profesionale dhe më të lehta për t'u lexuar!
+
 ## 📝 Shënime:
 
 - Aplikacioni funksionon edhe pa paketat opsionale (por disa veçori nuk do të jenë të disponueshme)

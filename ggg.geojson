@@ -1,0 +1,95 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.1622878,
+          42.6608774
+        ]
+      },
+      "properties": {
+        "name": "2 Korriku, Qendra, Prishtinë, Komuna e Prishtinës / Opština Priština, Rajoni i Prishtinës / Prištinski okrug, 10000, Kosova / Kosovo\n📍 Prishtinë → Kosova / Kosovo",
+        "description": "",
+        "timestamp": "2025-11-18T02:21:13.769014"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.1622878,
+          42.6608774
+        ]
+      },
+      "properties": {
+        "name": "2 Korriku, Qendra, Prishtinë, Komuna e Prishtinës / Opština Priština, Rajoni i Prishtinës / Prištinski okrug, 10000, Kosova / Kosovo\n📍 Prishtinë → Kosova / Kosovo",
+        "description": "",
+        "timestamp": "2025-11-18T02:21:16.772579"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.1622878,
+          42.6608774
+        ]
+      },
+      "properties": {
+        "name": "2 Korriku, Qendra, Prishtinë, Komuna e Prishtinës / Opština Priština, Rajoni i Prishtinës / Prištinski okrug, 10000, Kosova / Kosovo\n📍 Prishtinë → Kosova / Kosovo",
+        "description": "",
+        "timestamp": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.1622878,
+          42.6608774
+        ]
+      },
+      "properties": {
+        "name": "2 Korriku, Qendra, Prishtinë, Komuna e Prishtinës / Opština Priština, Rajoni i Prishtinës / Prištinski okrug, 10000, Kosova / Kosovo\n📍 Prishtinë → Kosova / Kosovo",
+        "description": "",
+        "timestamp": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.1622878,
+          42.6608774
+        ]
+      },
+      "properties": {
+        "name": "Exported Track",
+        "description": "",
+        "timestamp": "2025-11-18T02:21:13.769014"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          21.1622878,
+          42.6608774
+        ]
+      },
+      "properties": {
+        "name": "Exported Track",
+        "description": "",
+        "timestamp": "2025-11-18T02:21:16.772579"
+      }
+    }
+  ]
+}

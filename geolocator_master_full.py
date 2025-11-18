@@ -56,11 +56,16 @@ except Exception:
 # Configuration
 # -------------------------
 APP_TITLE = "GeoLocator - Advanced GIS/GNSS/PostGIS"
-BG_COLOR = "white"
-CARD_BG = "#FAFBFD"
-PRIMARY_BLUE = "#1E88E5"
-DARK_BLUE = "#0D47A1"
-TEXT_COLOR = "#222222"
+BG_COLOR = "#F5F7FA"  # Light blue-gray background
+CARD_BG = "#FFFFFF"  # Pure white cards
+PRIMARY_BLUE = "#2196F3"  # Material Blue
+SECONDARY_BLUE = "#03A9F4"  # Light Blue
+DARK_BLUE = "#1976D2"  # Dark Blue
+SUCCESS_GREEN = "#4CAF50"  # Green
+WARNING_ORANGE = "#FF9800"  # Orange
+ERROR_RED = "#F44336"  # Red
+TEXT_COLOR = "#212121"  # Almost black
+TEXT_SECONDARY = "#757575"  # Gray
 
 # If you want to use Google Geocoding for more accurate results, set:
 # GOOGLE_API_KEY = "YOUR_API_KEY_HERE"
@@ -484,8 +489,8 @@ def insert_point_postgis(table_name, lat, lon, name="", description=""):
     try:
         cur = conn.cursor()
         query = f"""
-        INSERT INTO {table_name} (name, description, geom)
-        VALUES (%s, %s, ST_SetSRID(ST_MakePoint(%s, %s), 4326))
+        INSERT INTO {table_name} (name, description, geom, search_date)
+        VALUES (%s, %s, ST_SetSRID(ST_MakePoint(%s, %s), 4326), NOW())
         """
         cur.execute(query, (name, description, float(lon), float(lat)))
         conn.commit()
@@ -497,6 +502,27 @@ def insert_point_postgis(table_name, lat, lon, name="", description=""):
             conn.rollback()
             conn.close()
         return False
+
+def save_to_database(lat, lon, name, search_type):
+    """Automatically save search to database if connected."""
+    if not POSTGIS_HOST or not POSTGIS_DB:
+        return  # Not configured
+    
+    try:
+        conn = connect_postgis()
+        if conn:
+            cur = conn.cursor()
+            # Try to insert into locations table
+            query = """
+            INSERT INTO locations (name, search_type, latitude, longitude, geom, search_date)
+            VALUES (%s, %s, %s, %s, ST_SetSRID(ST_MakePoint(%s, %s), 4326), NOW())
+            """
+            cur.execute(query, (name, search_type, float(lat), float(lon), float(lon), float(lat)))
+            conn.commit()
+            cur.close()
+            conn.close()
+    except Exception:
+        pass  # Silently fail if table doesn't exist
 
 def find_points_within_radius(table_name, lat, lon, radius_meters):
     """Find all points within radius using PostGIS spatial query."""
@@ -527,6 +553,42 @@ def find_points_within_radius(table_name, lat, lon, radius_meters):
             conn.close()
         return []
 
+def create_database_table():
+    """Create the locations table if it doesn't exist."""
+    conn = connect_postgis()
+    if not conn:
+        return False, "Not connected to database"
+    
+    try:
+        cur = conn.cursor()
+        # Create table
+        cur.execute("""
+        CREATE TABLE IF NOT EXISTS locations (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(500),
+            search_type VARCHAR(50),
+            latitude DOUBLE PRECISION,
+            longitude DOUBLE PRECISION,
+            geom GEOMETRY(Point, 4326),
+            search_date TIMESTAMP DEFAULT NOW()
+        );
+        """)
+        
+        # Create spatial index
+        cur.execute("""
+        CREATE INDEX IF NOT EXISTS locations_geom_idx ON locations USING GIST (geom);
+        """)
+        
+        conn.commit()
+        cur.close()
+        conn.close()
+        return True, "Table created successfully"
+    except Exception as e:
+        if conn:
+            conn.rollback()
+            conn.close()
+        return False, str(e)
+
 # -------------------------
 # GUI functions: Fill results
 # -------------------------
@@ -534,6 +596,13 @@ def clear_results():
     for k in result_vars:
         result_vars[k].set("")
     history_listbox.delete(0, tk.END)
+
+def clear_input_fields():
+    """Clear all input fields"""
+    address_entry.delete(0, tk.END)
+    lat_entry.delete(0, tk.END)
+    lon_entry.delete(0, tk.END)
+    ip_entry.delete(0, tk.END)
 
 def add_to_history(entry):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -570,6 +639,12 @@ def on_find_coordinates():
     if not address:
         messagebox.showerror("Input required", "Please enter an address.")
         return
+    
+    # Clear other input fields
+    lat_entry.delete(0, tk.END)
+    lon_entry.delete(0, tk.END)
+    ip_entry.delete(0, tk.END)
+    
     try:
         # Optionally try Google first if configured
         location = None
@@ -598,6 +673,9 @@ def on_find_coordinates():
         }
         fill_result_panel(out)
         add_to_history(f"Address -> {address}")
+        
+        # Save to database if connected
+        save_to_database(data["latitude"], data["longitude"], data["display_name"], "address_search")
     except Exception as e:
         messagebox.showerror("Error", f"Geocoding failed: {e}")
 
@@ -610,6 +688,11 @@ def on_find_address():
     if not lat or not lon:
         messagebox.showerror("Input required", "Please enter both latitude and longitude.")
         return
+    
+    # Clear other input fields
+    address_entry.delete(0, tk.END)
+    ip_entry.delete(0, tk.END)
+    
     try:
         location = geolocator.reverse(f"{lat}, {lon}", addressdetails=True, exactly_one=True, timeout=10)
         if not location:
@@ -633,6 +716,9 @@ def on_find_address():
         }
         fill_result_panel(out)
         add_to_history(f"Coords -> {lat},{lon}")
+        
+        # Save to database if connected
+        save_to_database(lat, lon, data["display_name"], "coords_search")
     except Exception as e:
         messagebox.showerror("Error", f"Reverse geocoding failed: {e}")
 
@@ -644,6 +730,12 @@ def on_find_ip():
     if not ip:
         messagebox.showerror("Input required", "Please enter an IP address.")
         return
+    
+    # Clear other input fields
+    address_entry.delete(0, tk.END)
+    lat_entry.delete(0, tk.END)
+    lon_entry.delete(0, tk.END)
+    
     try:
         url = f"{IP_API_BASE}{ip}?fields=status,message,country,regionName,city,zip,lat,lon,timezone,isp,org,as,query"
         r = requests.get(url, timeout=8)
@@ -668,12 +760,106 @@ def on_find_ip():
         }
         fill_result_panel(out)
         add_to_history(f"IP -> {ip}")
+        
+        # Save to database if connected
+        save_to_database(data.get("lat"), data.get("lon"), f"IP: {ip}", "ip_search")
     except Exception as e:
         messagebox.showerror("Error", f"IP lookup failed: {e}")
 
 # -------------------------
 # Map generation (Folium)
 # -------------------------
+def open_map_with_distances():
+    """Create map showing distances to major world cities."""
+    lat = result_vars["Latitude"].get()
+    lon = result_vars["Longitude"].get()
+    if not lat or not lon:
+        messagebox.showerror("No coordinates", "Please search for a location first.")
+        return
+    
+    try:
+        latf = float(lat)
+        lonf = float(lon)
+    except:
+        messagebox.showerror("Invalid", "Invalid coordinates.")
+        return
+    
+    # Major world cities
+    major_cities = [
+        ("New York, USA", 40.7128, -74.0060),
+        ("London, UK", 51.5074, -0.1278),
+        ("Paris, France", 48.8566, 2.3522),
+        ("Tokyo, Japan", 35.6762, 139.6503),
+        ("Beijing, China", 39.9042, 116.4074),
+        ("Moscow, Russia", 55.7558, 37.6173),
+        ("Dubai, UAE", 25.2048, 55.2708),
+        ("Sydney, Australia", -33.8688, 151.2093),
+        ("São Paulo, Brazil", -23.5505, -46.6333),
+        ("Cairo, Egypt", 30.0444, 31.2357),
+        ("Mumbai, India", 19.0760, 72.8777),
+        ("Berlin, Germany", 52.5200, 13.4050),
+        ("Rome, Italy", 41.9028, 12.4964),
+        ("Madrid, Spain", 40.4168, -3.7038),
+        ("Istanbul, Turkey", 41.0082, 28.9784),
+    ]
+    
+    # Create map
+    m = folium.Map(location=[latf, lonf], zoom_start=3, tiles='OpenStreetMap')
+    
+    # Add current location
+    folium.Marker(
+        [latf, lonf],
+        popup=f"<b>Your Location</b><br>{result_vars['Display Address'].get() or 'Current Location'}",
+        tooltip="Your Location",
+        icon=folium.Icon(color='red', icon='star', prefix='glyphicon')
+    ).add_to(m)
+    
+    # Add lines and markers to major cities
+    for city_name, city_lat, city_lon in major_cities:
+        # Calculate distance
+        dist = calculate_distance(latf, lonf, city_lat, city_lon)
+        dist_km = dist / 1000
+        
+        # Add line
+        folium.PolyLine(
+            locations=[[latf, lonf], [city_lat, city_lon]],
+            color='blue',
+            weight=2,
+            opacity=0.6,
+            popup=f"{city_name}<br>Distance: {dist_km:.0f} km"
+        ).add_to(m)
+        
+        # Add city marker
+        folium.CircleMarker(
+            location=[city_lat, city_lon],
+            radius=5,
+            popup=f"<b>{city_name}</b><br>Distance: {dist_km:.0f} km ({dist/1609.34:.0f} miles)",
+            tooltip=f"{city_name}: {dist_km:.0f} km",
+            color='blue',
+            fillColor='lightblue',
+            fillOpacity=0.7
+        ).add_to(m)
+    
+    # Add title
+    title_html = f'''
+    <div style="position: fixed; top: 10px; left: 50px; width: auto; background-color: white;
+                border: 2px solid #2196F3; border-radius: 5px; z-index: 9999; padding: 10px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.3); font-family: Arial, sans-serif;">
+        <h4 style="margin: 0 0 5px 0; color: #2196F3;">📍 Distances from Your Location</h4>
+        <p style="margin: 0; font-size: 12px;">{result_vars['Display Address'].get() or 'Current Location'}</p>
+        <p style="margin: 5px 0 0 0; font-size: 11px; color: #666;">
+            Blue lines show distances to major world cities
+        </p>
+    </div>
+    '''
+    m.get_root().html.add_child(folium.Element(title_html))
+    
+    # Save and open
+    outpath = os.path.join(os.getcwd(), "geolocator_distances.html")
+    m.save(outpath)
+    webbrowser.open("file://" + os.path.abspath(outpath))
+    messagebox.showinfo("Map Opened", "Distance map opened in browser!\n\nBlue lines show distances to 15 major world cities.")
+
 def open_map_in_browser(satellite=False):
     """Krijon një hartë HTML të bukur dhe të saktë me informacione të detajuara"""
     lat = result_vars["Latitude"].get()
@@ -872,6 +1058,51 @@ def export_current_to_csv():
         for k, v in data.items():
             writer.writerow([k, v])
     messagebox.showinfo("Saved", f"Result exported to {filename}")
+
+def import_single_address_from_csv():
+    """Import a random address from CSV and search it."""
+    file = filedialog.askopenfilename(
+        filetypes=[("CSV files", "*.csv")],
+        title="Select CSV file with addresses"
+    )
+    
+    if not file:
+        return
+    
+    try:
+        df = pd.read_csv(file, encoding='utf-8')
+    except:
+        try:
+            df = pd.read_csv(file, encoding='latin-1')
+        except Exception as e:
+            messagebox.showerror("Error", f"Cannot read CSV: {e}")
+            return
+    
+    # Find address column
+    address_col = None
+    for col in df.columns:
+        if col.lower() in ['address', 'adresa', 'adresë', 'location', 'lokacion']:
+            address_col = col
+            break
+    
+    if not address_col:
+        messagebox.showerror("Error", "CSV must have a column named 'address' or 'adresa'")
+        return
+    
+    # Get random address
+    import random
+    addresses = df[address_col].dropna().tolist()
+    if not addresses:
+        messagebox.showerror("Error", "No addresses found in CSV")
+        return
+    
+    random_address = random.choice(addresses)
+    
+    # Set it in the address field and search
+    address_entry.delete(0, tk.END)
+    address_entry.insert(0, str(random_address))
+    
+    messagebox.showinfo("Random Address", f"Imported random address:\n{random_address}\n\nClick 'Find Coordinates' to search.")
 
 def batch_geocode_from_csv():
     """Geokodim në masë nga CSV - merr adresa dhe kthen koordinata"""
@@ -1378,6 +1609,22 @@ def on_postgis_insert():
     
     tk.Button(dialog, text="Insert", command=insert).pack(pady=10)
 
+def on_create_table():
+    """Create the locations table in PostGIS."""
+    if not POSTGIS_AVAILABLE:
+        messagebox.showerror("Not available", "psycopg2 not installed.")
+        return
+    
+    if not POSTGIS_HOST or not POSTGIS_DB:
+        messagebox.showerror("Not connected", "Please connect to PostGIS first.")
+        return
+    
+    success, message = create_database_table()
+    if success:
+        messagebox.showinfo("Success", f"✅ {message}\n\nTable 'locations' is ready to store your searches automatically!")
+    else:
+        messagebox.showerror("Error", f"Failed to create table:\n{message}")
+
 def on_postgis_query():
     """Query PostGIS for points within radius."""
     if not POSTGIS_AVAILABLE:
@@ -1673,43 +1920,50 @@ ip_entry = tk.Entry(ip_card, width=30, font=("Segoe UI", 10))
 ip_entry.grid(row=0, column=1, padx=6, pady=4)
 tk.Button(ip_card, text="Locate IP", bg=PRIMARY_BLUE, fg="white", command=on_find_ip).grid(row=0, column=2, padx=6)
 
-batch_card = tk.LabelFrame(left, text="Batch / Export", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 10))
+batch_card = tk.LabelFrame(left, text="Batch / Export / Import", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 10))
 batch_card.pack(fill="x", pady=6)
-tk.Button(batch_card, text="Batch Geocode CSV", bg=PRIMARY_BLUE, fg="white", command=batch_geocode_from_csv).grid(row=0, column=0, padx=6, pady=4)
-tk.Button(batch_card, text="Export Current → CSV", bg=DARK_BLUE, fg="white", command=export_current_to_csv).grid(row=0, column=1, padx=6, pady=4)
+tk.Button(batch_card, text="Batch Geocode CSV", bg=PRIMARY_BLUE, fg="white", command=batch_geocode_from_csv).grid(row=0, column=0, padx=4, pady=4)
+tk.Button(batch_card, text="Export Current → CSV", bg=DARK_BLUE, fg="white", command=export_current_to_csv).grid(row=0, column=1, padx=4, pady=4)
+tk.Button(batch_card, text="Import Random Address", bg=SECONDARY_BLUE, fg="white", command=import_single_address_from_csv).grid(row=0, column=2, padx=4, pady=4)
 
 maps_card = tk.LabelFrame(left, text="Maps", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 10))
 maps_card.pack(fill="x", pady=6)
-tk.Button(maps_card, text="Open Map (Browser)", bg=DARK_BLUE, fg="white", command=lambda: open_map_in_browser(False)).grid(row=0, column=0, padx=6, pady=4)
-tk.Button(maps_card, text="Open Satellite (Browser)", bg=PRIMARY_BLUE, fg="white", command=lambda: open_map_in_browser(True)).grid(row=0, column=1, padx=6, pady=4)
-tk.Button(maps_card, text="Embed Map (Optional)", bg=PRIMARY_BLUE, fg="white", command=embed_map_inside_app).grid(row=0, column=2, padx=6, pady=4)
+tk.Button(maps_card, text="Open Map (Browser)", bg=DARK_BLUE, fg="white", command=lambda: open_map_in_browser(False)).grid(row=0, column=0, padx=4, pady=4)
+tk.Button(maps_card, text="Open Satellite (Browser)", bg=PRIMARY_BLUE, fg="white", command=lambda: open_map_in_browser(True)).grid(row=0, column=1, padx=4, pady=4)
+tk.Button(maps_card, text="Show Distances to World", bg=SUCCESS_GREEN, fg="white", command=open_map_with_distances).grid(row=0, column=2, padx=4, pady=4)
+tk.Button(maps_card, text="Embed Map (Optional)", bg=SECONDARY_BLUE, fg="white", command=embed_map_inside_app).grid(row=1, column=0, columnspan=3, padx=4, pady=4, sticky="ew")
 
 # GIS Features (Gjeoreferencimi & Spatial Analysis)
 gis_card = tk.LabelFrame(left, text="GIS / Gjeoreferencimi", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 10))
 gis_card.pack(fill="x", pady=6)
-tk.Button(gis_card, text="Transform to UTM", bg="#4CAF50", fg="white", command=on_transform_coordinates).grid(row=0, column=0, padx=4, pady=3)
-tk.Button(gis_card, text="Calculate Distance", bg="#4CAF50", fg="white", command=on_calculate_distance).grid(row=0, column=1, padx=4, pady=3)
-tk.Button(gis_card, text="Create Buffer", bg="#4CAF50", fg="white", command=on_create_buffer).grid(row=0, column=2, padx=4, pady=3)
-tk.Button(gis_card, text="Store Point", bg="#8BC34A", fg="white", command=on_store_point).grid(row=1, column=0, padx=4, pady=3)
+tk.Button(gis_card, text="Transform to UTM", bg=SUCCESS_GREEN, fg="white", command=on_transform_coordinates).grid(row=0, column=0, padx=4, pady=3)
+tk.Button(gis_card, text="Calculate Distance", bg=SUCCESS_GREEN, fg="white", command=on_calculate_distance).grid(row=0, column=1, padx=4, pady=3)
+tk.Button(gis_card, text="Create Buffer", bg=SUCCESS_GREEN, fg="white", command=on_create_buffer).grid(row=0, column=2, padx=4, pady=3)
+tk.Button(gis_card, text="Store Point", bg=SUCCESS_GREEN, fg="white", command=on_store_point).grid(row=1, column=0, columnspan=3, padx=4, pady=3, sticky="ew")
 
 # GNSS Features (GPX Support)
 gnss_card = tk.LabelFrame(left, text="GNSS / GPX", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 10))
 gnss_card.pack(fill="x", pady=6)
-tk.Button(gnss_card, text="Import GPX", bg="#FF9800", fg="white", command=on_import_gpx).grid(row=0, column=0, padx=4, pady=3)
-tk.Button(gnss_card, text="Export GPX", bg="#FF9800", fg="white", command=on_export_gpx).grid(row=0, column=1, padx=4, pady=3)
+tk.Button(gnss_card, text="Import GPX", bg=WARNING_ORANGE, fg="white", command=on_import_gpx).grid(row=0, column=0, padx=4, pady=3, sticky="ew")
+tk.Button(gnss_card, text="Export GPX", bg=WARNING_ORANGE, fg="white", command=on_export_gpx).grid(row=0, column=1, padx=4, pady=3, sticky="ew")
+gnss_card.grid_columnconfigure(0, weight=1)
+gnss_card.grid_columnconfigure(1, weight=1)
 
 # GeoJSON Import/Export
 geojson_card = tk.LabelFrame(left, text="GeoJSON", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 10))
 geojson_card.pack(fill="x", pady=6)
-tk.Button(geojson_card, text="Import GeoJSON", bg="#9C27B0", fg="white", command=on_import_geojson).grid(row=0, column=0, padx=4, pady=3)
-tk.Button(geojson_card, text="Export GeoJSON", bg="#9C27B0", fg="white", command=on_export_geojson).grid(row=0, column=1, padx=4, pady=3)
+tk.Button(geojson_card, text="Import GeoJSON", bg="#9C27B0", fg="white", command=on_import_geojson).grid(row=0, column=0, padx=4, pady=3, sticky="ew")
+tk.Button(geojson_card, text="Export GeoJSON", bg="#9C27B0", fg="white", command=on_export_geojson).grid(row=0, column=1, padx=4, pady=3, sticky="ew")
+geojson_card.grid_columnconfigure(0, weight=1)
+geojson_card.grid_columnconfigure(1, weight=1)
 
 # PostGIS / Spatial Database
 postgis_card = tk.LabelFrame(left, text="PostGIS / Databazat Gjeohapsinore", bg=CARD_BG, padx=8, pady=8, font=("Segoe UI", 10))
 postgis_card.pack(fill="x", pady=6)
-tk.Button(postgis_card, text="Connect PostGIS", bg="#F44336", fg="white", command=on_postgis_connect).grid(row=0, column=0, padx=4, pady=3)
-tk.Button(postgis_card, text="Insert Point", bg="#F44336", fg="white", command=on_postgis_insert).grid(row=0, column=1, padx=4, pady=3)
-tk.Button(postgis_card, text="Spatial Query", bg="#F44336", fg="white", command=on_postgis_query).grid(row=0, column=2, padx=4, pady=3)
+tk.Button(postgis_card, text="Connect PostGIS", bg=ERROR_RED, fg="white", command=on_postgis_connect).grid(row=0, column=0, padx=4, pady=3)
+tk.Button(postgis_card, text="Create Table", bg=WARNING_ORANGE, fg="white", command=lambda: on_create_table()).grid(row=0, column=1, padx=4, pady=3)
+tk.Button(postgis_card, text="Insert Point", bg=ERROR_RED, fg="white", command=on_postgis_insert).grid(row=0, column=2, padx=4, pady=3)
+tk.Button(postgis_card, text="Spatial Query", bg=ERROR_RED, fg="white", command=on_postgis_query).grid(row=1, column=0, columnspan=3, padx=4, pady=3, sticky="ew")
 
 # History
 hist_card = tk.LabelFrame(left, text="Search History", bg=CARD_BG, padx=6, pady=6, font=("Segoe UI", 10))
